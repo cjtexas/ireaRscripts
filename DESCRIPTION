@@ -1,0 +1,11 @@
+Package: lbRscripts
+Title: Various scripts for spatial processing
+Version: 0.0.0.9000
+Authors@R: person("Lorenzo", "Busetto", email = "busetto.l@irea.cnr.it", role = c("aut", "cre"))
+Description: What the package does (one paragraph).
+Depends:
+    R (>= 3.2.2)
+Import: data.table
+License: GPL >3.0
+LazyData: true
+RoxygenNote: 5.0.1
