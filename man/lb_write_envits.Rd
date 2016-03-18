@@ -2,23 +2,26 @@
 % Please edit documentation in R/lb_write_envits.R
 \name{lb_write_envits}
 \alias{lb_write_envits}
-\title{Title}
+\title{lb_write_envits}
 \usage{
-lb_write_envits(in_raster = in_raster, in_dates = in_dates,
-  out_file = out_file, date_type = "date", multiband = F)
+lb_write_envits(in_raster, in_dates, out_file)
 }
 \arguments{
-\item{in_raster}{a}
+\item{in_raster}{Input "R" raster object}
 
-\item{in_dates}{b}
+\item{in_dates}{Dates corresponding to the different dates of acquisition (as "Dates" array or numeric array of doys)}
 
-\item{out_file}{b}
+\item{out_file}{Output file name}
 
-\item{date_type}{n}
-
-\item{multiband}{n}
+\item{multiband}{logical. if T}
 }
 \description{
-Title
+lb_write_envits
+}
+\details{
+Function to save an "R" multitemporal raster object to an ENVI multiband file (BSQ)
+Bandnames and wavelengths of the output ENVI file are set on the basis of the acquisition dates .
+In paricular, wl takes the value of the acquisition doy, computed starting from 1st of January of the
+minimum year in the time serties
 }
 

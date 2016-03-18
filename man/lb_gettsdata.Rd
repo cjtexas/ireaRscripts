@@ -2,17 +2,104 @@
 % Please edit documentation in R/lb_gettsdata.R
 \name{lb_gettsdata}
 \alias{lb_gettsdata}
-\title{Title}
+\title{lb_gettsdata}
 \usage{
 lb_gettsdata(in_files, in_dates, shp, id_field, buffer = NULL, BS = F,
   format = "ENVI", avg = T, sd = F, minmax = F, cvar = F,
   out_rast = NULL, start_date = NULL, end_date = NULL, verbose = T,
-  na.rm = T)
+  na.rm = T, in_nodata = NULL)
 }
 \arguments{
-\item{na.rm}{}
+\item{in_files}{list of raster images from which statistics has to be computed OR single multiband raster file}
+
+\item{in_dates}{acquisition dates of the raster files (same order of the raster files). If input is a multiband, the number of
+elements of in_dates must be equal to the number of bands}
+
+\item{shp}{"R" spatial object OR filename of ESRI shapefile  containing polygons on which statistics must be extracted}
+
+\item{id_field}{field of the shapefile/spatial object containing unique identifiers (names, or ids) of the spatial elements for which
+statistics has to be extracted}
+
+\item{buffer}{numeric if specified, a buffer of specified width is applied to the spatial object before computing
+statistics. Negative values allow to "shrink" the polygons.}
+
+\item{BS}{logical if TRUE, then the time serie is a BackScatter SAR time serie. In this case, values are converted to 10*log10}
+
+\item{format}{format of output imagery. default = ENVI. All gdal formats possible (e.g., "Gtiff)}
+
+\item{avg}{logical if T, compute average. Default = T}
+
+\item{sd}{logical if T, compute standard deviation. Default = F}
+
+\item{minmax}{logical if T, compute minimum and maximum.Default = F}
+
+\item{cvar}{logical if T, compute variation coefficient. Default = F}
+
+\item{out_rast}{character (Optional). If specified, a new multiband raster file containing the time series cropped on extent of the
+input spatial object is created}
+
+\item{start_date}{Date, posIXct, posIXlt Starting date for extraction. Default = NULL (Start from first available date)}
+
+\item{end_date}{Date, posIXct, posIXlt Ending date for extraction. Default = NULL (End on Last available date)}
+
+\item{verbose}{logical If T, send out progress messages (default = T)}
+
+\item{na.rm}{logical If T, remove nodata while computing statistics (default = T)}
+
+\item{in_nodata}{numeric value of NODATA in input raster files}
+}
+\value{
+list of data frames. Number of elements in the list is equal to the number of statistics computed (e.g., if only avg
+is selected, then the list has one entry. If avg, sd and cvar are selected, then the list has three elements).
+Each statistics data frame contains a date column, a doy coulumn, and then a column for each spatial feature (e.g., polygon) from
+which statistics where extracted.
 }
 \description{
-Title
+lb_gettsdata
+}
+\details{
+This function can be used to extract statistic information (mean, sd, etc) for the different
+polygons/points of a shapefile/spatial object from a list of raster images acquired in different dates, or
+from a multiband raster file (In both cases, acquisition dates must be provided).
+The output is a list of data frames. Number of elements in the list is equal to the number of statistics computed (e.g., if only avg
+is selected, then the list has one entry. If avg, sd and cvar are selected, then the list has three elements).
+Each statistics data frame contains a date column, a doy coulumn, and then a column for each spatial feature (e.g., polygon) from
+which statistics where extracted. See the examples to see how to access simply to the results.
+
+NOTE: If out_rast is specified, a new multiband raster file containing the raster time series cropped on the extent of the
+input spatial object is created
+
+NOTE 2: Behaviour differs according to the type of vector file used. For polygons, values are computed considering pixels which centroid is
+included in the polygon. For lines, all pixels  that are touched by the line are considered.
+If shp represents points, only the cells on which the point falls are used.
+User can specify if applying a buffer on the shapefile before extracting the data
+
+NOTE 3: If shpaefile and raster files have different projections, shapefile is automatically reprojected
+
+NOTE 4: ALL input raster files must have the same dimensions !!!!!
+}
+\examples{
+# Extract average and standard deviation values from a list of raster datasets
+# for each polygon of a shapefile, after applying a 30m buffer, for each date available.
+the "id" field is used as identifier of polygons
+\dontrun{
+#Set the inputs
+in_files = file_path_sans_ext(list.files(in_folder, pattern = '*.hdr$', full.names = T))
+in_dates = as.Date(c('2000-01-01','2000-01-31',..... ))
+shpname = "D:/polygons.shp"  # Path to Polygon Shapefile
+out_rast = "D:/out_rast_multiband"
+#Compute statistics
+stats = lb_gettsdata(in_files= in_files,in_dates = in_dates, id_field = 'id', shp = shpname,
+buffer = -30, out_rast = out_rast, sd = T, cvar = T)
+
+#Access results
+avg_data = stats$avg   # Get all avg data (data frame)
+sd_data = stats$sd  # Get all sd data (data frame)
+
+avg_data_pol = avg_data$'id_of_polygon'   # extract data for just one polygon using its id
+sd_data_pol = sd_data$'id_of_polygon'
+
+plot(avg_data_pol$avg, avg_data_pol$doy)  # plot average vs date for selected polygon
+}
 }
 
