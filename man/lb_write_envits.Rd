@@ -24,4 +24,7 @@ Bandnames and wavelengths of the output ENVI file are set on the basis of the ac
 In paricular, wl takes the value of the acquisition doy, computed starting from 1st of January of the
 minimum year in the time serties
 }
+\examples{
+s
+}
 

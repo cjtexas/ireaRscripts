@@ -13,9 +13,9 @@
 #' @return NULL
 #' @export
 #'
-#' @import raster
+#' @import raster tools
 #'
-#' @examples
+#' @examples s
 lb_write_envits = function(in_raster, in_dates, out_file) {
 
   writeRaster(in_raster, filename = out_file,overwrite = T, format = 'ENVI')

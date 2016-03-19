@@ -3,10 +3,10 @@
 #' @param doys to be converted
 #' @param year year to be used as basis (careful with LEAP years !!!)
 #'
-#' @return
+#' @return NULL
 #' @export
 #'
-#' @examples
+#' @examples a
 lb_doytodate = function (doys = doys, year = NULL){
 
   dates = as.Date(doys - 1, origin = paste0(year, "-01-01"))
@@ -18,10 +18,10 @@ lb_doytodate = function (doys = doys, year = NULL){
 #'
 #' @param dates dates to be converted. class = date, posIx, etc....
 #'
-#' @return
+#' @return NULL
 #' @export
 #'
-#' @examples
+#' @examples b
 lb_datetodoy = function (dates = dates){
 
   doys =  as.numeric(strftime(dates, format = '%j'))

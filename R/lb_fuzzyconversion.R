@@ -11,7 +11,7 @@
 #'
 #' @import QCA
 #'
-#' @examples
+#' @examples a
 
 lb_fuzzyconversion = function (in_raster, thresholds , ...) {
   out_raster = stack(in_raster)

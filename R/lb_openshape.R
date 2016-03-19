@@ -7,7 +7,7 @@
 #' @export
 #' @importFrom rgdal readOGR
 #' @importFrom tools file_path_sans_ext
-#' @examples
+#' @examples s
 lb_openshape = function(shp_file){
 
   basename = basename(file_path_sans_ext(shp_file))

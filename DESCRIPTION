@@ -5,7 +5,7 @@ Authors@R: person("Lorenzo", "Busetto", email = "busetto.l@irea.cnr.it", role = 
 Description: What the package does (one paragraph).
 Depends:
     R (>= 3.2.2)
-Import: data.table
+Imports: QCA, data.table, gdalUtils, raster, rgdal, rgeos, rts
 License: GPL >3.0
 LazyData: true
 RoxygenNote: 5.0.1

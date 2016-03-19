@@ -18,4 +18,7 @@ lb_openshape
 \details{
 function for easily opening a ESRI shapefile by simply specifying its filename
 }
+\examples{
+s
+}
 
