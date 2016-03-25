@@ -1,4 +1,9 @@
-#' lb_gettsdata
+#' lb_tszonal
+#'
+#' @description Function for extracting zonal statistics from a time series of raster data (avg, stdev, variation coefficient, min and max) over the spatial feeatures (points, polygons) of a shapefile or "R" *Spatial
+#' object. Output is a list of data frames containing a date column, a doy coulumn, and then a column for each spatial feature (e.g., polygon) from
+#' which statistics where extracted. Input can be a list of coregistered single date files, or a multitemporal raster. User can select to save a
+#' multitemporal raster in output, cropped on the extent of the input spatial object. See "details" for other info.
 #'
 #' @details This function can be used to extract statistic information (mean, sd, etc) for the different
 #' polygons/points of a shapefile/spatial object from a list of raster images acquired in different dates, or
@@ -61,7 +66,7 @@
 #' shpname = "D:/polygons.shp"  # Path to Polygon Shapefile
 #' out_rast = "D:/out_rast_multiband"
 #' #Compute statistics
-#' stats = lb_gettsdata(in_files= in_files,in_dates = in_dates, id_field = 'id', shp = shpname,
+#' stats = lb_tszonal(in_files= in_files,in_dates = in_dates, id_field = 'id', shp = shpname,
 #' buffer = -30, out_rast = out_rast, sd = T, cvar = T)
 #'
 #' #Access results
@@ -74,7 +79,7 @@
 #' plot(avg_data_pol$avg, avg_data_pol$doy)  # plot average vs date for selected polygon
 #' }
 
-lb_gettsdata = function(in_files, in_dates, shp,id_field, buffer = NULL, BS = F, format = 'ENVI',
+lb_tszonal = function(in_files, in_dates, shp,id_field, buffer = NULL, BS = F, format = 'ENVI',
                         avg = T, sd = F, minmax = F, cvar = F ,out_rast = NULL, start_date = NULL,
                         end_date = NULL,verbose = T, na.rm = T, in_nodata = NULL){
   # beginCluster()

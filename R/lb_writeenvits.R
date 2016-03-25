@@ -1,5 +1,5 @@
 
-#' lb_write_envits
+#' lb_writeenvits
 #' @details Function to save an "R" multitemporal raster object to an ENVI multiband file (BSQ)
 #' Bandnames and wavelengths of the output ENVI file are set on the basis of the acquisition dates .
 #' In paricular, wl takes the value of the acquisition doy, computed starting from 1st of January of the
@@ -16,7 +16,7 @@
 #' @import raster tools
 #'
 #' @examples s
-lb_write_envits = function(in_raster, in_dates, out_file) {
+lb_writeenvits = function(in_raster, in_dates, out_file) {
 
   writeRaster(in_raster, filename = out_file,overwrite = T, format = 'ENVI')
   bandnames = paste(basename(file_path_sans_ext(out_file)),in_dates, sep = '_')
