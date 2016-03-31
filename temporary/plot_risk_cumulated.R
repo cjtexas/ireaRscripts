@@ -49,12 +49,25 @@ plot(weekly_data_gr)
 plot(cumsum(weekly_data_gr))
 
 in_datats = rbind(in_datats_it, in_datats_es,in_datats_gr)
-in_datats$risk[in_datats$date < as.Date('2014-06-15')] = 0
+in_datats$risk[in_datats$date < as.Date('2014-06-30')] = 0
 in_datats$risk[in_datats$date > as.Date('2015-08-30')] = 0
-in_datats$risk[in_datats$date > as.Date('2014-08-30') & in_datats$date < as.Date('2015-06-15')] = 0
+in_datats$risk[in_datats$date > as.Date('2014-08-30') & in_datats$date < as.Date('2015-06-30')] = 0
 
 in_datats$year = as.factor(year(in_datats$date))
+in_datats$date [year(in_datats$date) == 2014] = in_datats$date [year(in_datats$date) == 2014]+365
+
 p = ggplot(in_datats, aes(x = date, y = risk, color = country, group = country) ) + theme_bw()
 p = p + geom_line()+scale_x_date(limits = c(as.Date('2014-05-01'),as.Date('2015-09-01')),date_breaks = "1 month", date_labels = "%m/%y")+facet_grid(country~year)
 p
 
+prots = xts(in_datats, in_datats$date)
+
+proweek = ddply(in_datats, .(country, year), summarize, cum = cumsum(risk))
+proweek$date= in_datats$date
+p = ggplot(proweek, aes(x = date, y = cum))
+p = p + geom_line(aes(color = year))+facet_wrap(~country)+scale_x_date(limits = c(as.Date('2015-06-01'),as.Date('2015-09-01')),date_breaks = "1 month", date_labels = "%m/%y")
+p + theme_bw()
+
+head(proweek)
+
+plot(proweek)
