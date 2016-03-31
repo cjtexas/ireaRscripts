@@ -87,13 +87,14 @@ NOTE 4: ALL input raster files must have the same dimensions !!!!!
 the "id" field is used as identifier of polygons
 \dontrun{
 #Set the inputs
-in_files = file_path_sans_ext(list.files(in_folder, pattern = '*.hdr$', full.names = T))
-in_dates = as.Date(c('2000-01-01','2000-01-31',..... ))
+in_files = file_path_sans_ext(list.files(in_folder, pattern = '*.hdr$', full.names = T))   #List of files
+in_dates = as.Date(c('2000-01-01','2000-01-31',..... ))    # List of acquisition dates (MUST be same order as files)
 shpname = "D:/polygons.shp"  # Path to Polygon Shapefile
-out_rast = "D:/out_rast_multiband"
+out_rast = "D:/out_rast_multiband"  # Name of output multitemporal file (optional)
+
 #Compute statistics
 stats = lb_tszonal(in_files= in_files,in_dates = in_dates, id_field = 'id', shp = shpname,
-buffer = -30, out_rast = out_rast, sd = T, cvar = T)
+                   buffer = -30, out_rast = out_rast, sd = T, cvar = T)
 
 #Access results
 avg_data = stats$avg   # Get all avg data (data frame)
