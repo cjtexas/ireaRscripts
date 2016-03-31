@@ -1,4 +1,4 @@
-Package: lbRscripts
+Package: ireaRscripts
 Title: Various scripts for spatial processing
 Version: 0.0.0.9000
 Authors@R: person("Lorenzo", "Busetto", email = "busetto.l@irea.cnr.it", role = c("aut", "cre"))
