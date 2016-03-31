@@ -7,7 +7,12 @@
 #' @export
 #' @importFrom rgdal readOGR
 #' @importFrom tools file_path_sans_ext
-#' @examples s
+#' @examples
+#' \dontrun{
+#'  shp_file = 'D:/temp/polygons.shp'
+#'  shp = lb_openshape(shp_file)
+#'}
+
 lb_openshape = function(shp_file){
 
   basename = basename(file_path_sans_ext(shp_file))

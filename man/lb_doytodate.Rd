@@ -14,7 +14,4 @@ lb_doytodate(doys = doys, year = NULL)
 \description{
 Title lb_doytodate
 }
-\examples{
-a
-}
 

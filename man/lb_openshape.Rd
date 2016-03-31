@@ -19,6 +19,9 @@ lb_openshape
 function for easily opening a ESRI shapefile by simply specifying its filename
 }
 \examples{
-s
+\dontrun{
+ shp_file = 'D:/temp/polygons.shp'
+ shp = lb_openshape(shp_file)
+}
 }
 

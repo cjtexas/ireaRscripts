@@ -12,7 +12,4 @@ lb_datetodoy(dates = dates)
 \description{
 Title lb_datetodoy
 }
-\examples{
-b
-}
 

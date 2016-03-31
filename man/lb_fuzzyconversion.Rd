@@ -21,7 +21,4 @@ See help for "calibrate" function in QCA library for details.
 \description{
 lb_fuzzyconversion
 }
-\examples{
-a
-}
 

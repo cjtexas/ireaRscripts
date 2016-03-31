@@ -9,11 +9,10 @@
 #' See help for "calibrate" function in QCA library for details.
 #' @export
 #'
-#' @import QCA
+#' @importFrom QCAGUI calibrate
 #'
-#' @examples a
 
-lb_fuzzyconversion = function (in_raster, thresholds , ...) {
+lb_fuzzyconversion = function(in_raster, thresholds , ...) {
   out_raster = stack(in_raster)
   values(out_raster) = calibrate(values(out_raster), thresholds = thresholds, type = "fuzzy")
   out_raster

@@ -13,8 +13,6 @@ lb_writeenvits(in_raster = in_raster, in_dates = in_dates,
 \item{in_dates}{Dates corresponding to the different dates of acquisition (as "Dates" array or numeric array of doys)}
 
 \item{out_file}{Output file name}
-
-\item{multiband}{logical. if T}
 }
 \description{
 lb_writeenvits
@@ -24,5 +22,15 @@ Function to save an "R" multitemporal raster object (e.g., rasterStack) to an EN
 Bandnames and wavelengths of the output ENVI file are set on the basis of the acquisition dates .
 In paricular, wl takes the value of the acquisition doy, computed starting from 1st of January of the
 minimum year in the time serties
+}
+\examples{
+\dontrun{
+ # Create a raster stack from a list of single date raster
+ in_files = file_path_sans_ext(list.files(in_folder, pattern = '*.tif$', full.names = T))   #List of files
+ in_dates = as.Date(c('2000-01-01','2000-01-31',..... ))    # List of acquisition dates - MUST be same order as files
+ out_raster = 'd:/temp/out_multitemp'
+ # Create the ENVI raster file
+ lb_writeenvits (in_raster = raster_in, in_dates = acq_dates, out_file = out_raster)
+}
 }
 

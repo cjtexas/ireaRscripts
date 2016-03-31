@@ -6,8 +6,8 @@
 #' @return NULL
 #' @export
 #'
-#' @examples a
-lb_doytodate = function (doys = doys, year = NULL){
+
+lb_doytodate = function(doys = doys, year = NULL){
 
   dates = as.Date(doys - 1, origin = paste0(year, "-01-01"))
   return(dates)
@@ -21,10 +21,10 @@ lb_doytodate = function (doys = doys, year = NULL){
 #' @return NULL
 #' @export
 #'
-#' @examples b
-lb_datetodoy = function (dates = dates){
+
+lb_datetodoy = function(dates = dates){
 
   doys =  as.numeric(strftime(dates, format = '%j'))
-  return (doys)
+  return(doys)
 
 }

@@ -82,10 +82,9 @@ NOTE 3: If shpaefile and raster files have different projections, shapefile is a
 NOTE 4: ALL input raster files must have the same dimensions !!!!!
 }
 \examples{
-# Extract average and standard deviation values from a list of raster datasets
+\dontrun{# Extract average and standard deviation values from a list of raster datasets
 # for each polygon of a shapefile, after applying a 30m buffer, for each date available.
-the "id" field is used as identifier of polygons
-\dontrun{
+the id field is used as identifier of polygons
 #Set the inputs
 in_files = file_path_sans_ext(list.files(in_folder, pattern = '*.hdr$', full.names = T))   #List of files
 in_dates = as.Date(c('2000-01-01','2000-01-31',..... ))    # List of acquisition dates (MUST be same order as files)
