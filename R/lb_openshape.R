@@ -1,5 +1,5 @@
 #' lb_openshape
-#' @details function for easily opening a ESRI shapefile by simply specifying its filename
+#' @description function for easily opening a ESRI shapefile by simply specifying its filename
 #'
 #' @param shp_file filename of ESRI shapefile
 #'

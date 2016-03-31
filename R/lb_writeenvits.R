@@ -1,6 +1,6 @@
 
 #' lb_writeenvits
-#' @details Function to save an "R" multitemporal raster object (e.g., rasterStack) to an ENVI multiband file (BSQ)
+#' @description Function to save an "R" multitemporal raster object (e.g., rasterStack) to an ENVI multiband file (BSQ)
 #' Bandnames and wavelengths of the output ENVI file are set on the basis of the acquisition dates .
 #' In paricular, wl takes the value of the acquisition doy, computed starting from 1st of January of the
 #' minimum year in the time serties

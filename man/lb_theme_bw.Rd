@@ -4,10 +4,14 @@
 \alias{lb_theme_bw}
 \title{lb_theme_bw}
 \usage{
-lb_theme_bw(x_or = NULL, y_or = NULL, xsize_t = NULL, ysize_t = NULL,
+lb_theme_bw(x_ang = NULL, y_ang = NULL, xsize_t = NULL, ysize_t = NULL,
   xsize = NULL, ysize = NULL, tsize = NULL)
 }
 \arguments{
+\item{x_ang}{angle for x labels}
+
+\item{y_ang}{angle for y labels}
+
 \item{xsize_t}{size for x title}
 
 \item{ysize_t}{size for y title}
@@ -17,10 +21,6 @@ lb_theme_bw(x_or = NULL, y_or = NULL, xsize_t = NULL, ysize_t = NULL,
 \item{ysize}{size for y labels}
 
 \item{tsize}{size for title}
-
-\item{x_ang}{angle for x labels}
-
-\item{y_ang}{angle for y labels}
 }
 \description{
 lb_theme_bw

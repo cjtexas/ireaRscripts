@@ -1,9 +1,11 @@
 #' Title lb_doytodate
 #'
+#' @description Converts a doy (or array of doys) to date format. Year has to be specified
+#'
 #' @param doys to be converted
 #' @param year year to be used as basis (careful with LEAP years !!!)
 #'
-#' @return NULL
+#' @return date / array of dates
 #' @export
 #'
 
@@ -16,9 +18,11 @@ lb_doytodate = function(doys = doys, year = NULL){
 
 #' Title lb_datetodoy
 #'
+#' Converts a date (or array of dates) to doy
+#'
 #' @param dates dates to be converted. class = date, posIx, etc....
 #'
-#' @return NULL
+#' @return doy / array of doys
 #' @export
 #'
 

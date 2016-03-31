@@ -11,7 +11,10 @@ lb_doytodate(doys = doys, year = NULL)
 
 \item{year}{year to be used as basis (careful with LEAP years !!!)}
 }
+\value{
+date / array of dates
+}
 \description{
-Title lb_doytodate
+Converts a doy (or array of doys) to date format. Year has to be specified
 }
 

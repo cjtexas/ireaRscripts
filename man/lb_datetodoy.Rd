@@ -9,7 +9,10 @@ lb_datetodoy(dates = dates)
 \arguments{
 \item{dates}{dates to be converted. class = date, posIx, etc....}
 }
+\value{
+doy / array of doys
+}
 \description{
-Title lb_datetodoy
+Converts a date (or array of dates) to doy
 }
 

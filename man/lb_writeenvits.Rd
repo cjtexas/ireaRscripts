@@ -15,9 +15,6 @@ lb_writeenvits(in_raster = in_raster, in_dates = in_dates,
 \item{out_file}{Output file name}
 }
 \description{
-lb_writeenvits
-}
-\details{
 Function to save an "R" multitemporal raster object (e.g., rasterStack) to an ENVI multiband file (BSQ)
 Bandnames and wavelengths of the output ENVI file are set on the basis of the acquisition dates .
 In paricular, wl takes the value of the acquisition doy, computed starting from 1st of January of the

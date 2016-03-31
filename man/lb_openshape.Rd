@@ -13,9 +13,6 @@ lb_openshape(shp_file)
 Spatial* object (SpatialPolygons, SpatialPoints, eccetera)
 }
 \description{
-lb_openshape
-}
-\details{
 function for easily opening a ESRI shapefile by simply specifying its filename
 }
 \examples{
