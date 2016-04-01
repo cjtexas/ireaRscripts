@@ -32,5 +32,5 @@ lb_writeenvits = function(in_raster = in_raster, in_dates = in_dates, out_file =
   hdrfile = paste0(file_path_sans_ext(out_file),'.hdr')
   write(paste("Band Names = {", paste (bandnames, collapse = ', '), "}", sep=""),file=hdrfile,append=TRUE)
   write(paste("wavelength = {", paste (wl, collapse = ', '), "}", sep=""),file=hdrfile,append=TRUE)
-
+  gc()
 }
