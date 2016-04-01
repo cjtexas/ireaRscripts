@@ -25,7 +25,6 @@ lb_theme_bw = function(x_ang = NULL, y_ang = NULL, xsize_t = NULL, ysize_t = NUL
   if(length(xsize == 1)) {themeMod = themeMod + theme(axis.text.x = element_text(size = xsize_t))}
   if(length(ysize == 1)) {themeMod = themeMod + theme(axis.text.y = element_text(size = ysize_t))}
   if(length(tsize == 1)) {themeMod = themeMod + theme(title = element_text(size = tsize))}
-  if(length(frame == 1)) {themeMod = themeMod + theme(plot.background = element_rect(colour = "black"))}
   Sys.setlocale("LC_ALL","English")
   themeMod
 
