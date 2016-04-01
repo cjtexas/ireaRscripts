@@ -5,7 +5,7 @@
 \title{lb_writeenvits}
 \usage{
 lb_writeenvits(in_raster = in_raster, in_dates = in_dates,
-  out_file = out_file)
+  out_file = out_file, dtype = "FLT4S")
 }
 \arguments{
 \item{in_raster}{Input "R" raster object}
@@ -13,6 +13,8 @@ lb_writeenvits(in_raster = in_raster, in_dates = in_dates,
 \item{in_dates}{Dates corresponding to the different dates of acquisition (as "Dates" array or numeric array of doys)}
 
 \item{out_file}{Output file name}
+
+\item{dtype}{string data type of output (e.g., 'INT2s','FLT4S', ecc - see help of "writeRaster for a list). Defaults to floating}
 }
 \description{
 Function to save an "R" multitemporal raster object (e.g., rasterStack) to an ENVI multiband file (BSQ)

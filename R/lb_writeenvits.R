@@ -8,7 +8,7 @@
 #' @param in_raster Input "R" raster object
 #' @param in_dates Dates corresponding to the different dates of acquisition (as "Dates" array or numeric array of doys)
 #' @param out_file Output file name
-#'
+#' @param dtype string data type of output (e.g., 'INT2s','FLT4S', ecc - see help of "writeRaster for a list). Defaults to floating
 #' @return NULL
 #' @export
 #'
@@ -24,9 +24,9 @@
 #'  lb_writeenvits (in_raster = raster_in, in_dates = acq_dates, out_file = out_raster)
 #'}
 
-lb_writeenvits = function(in_raster = in_raster, in_dates = in_dates, out_file = out_file) {
+lb_writeenvits = function(in_raster = in_raster, in_dates = in_dates, out_file = out_file, dtype = 'FLT4S') {
 
-  writeRaster(in_raster, filename = out_file,overwrite = T, format = 'ENVI')
+  writeRaster(in_raster, filename = out_file,overwrite = T, format = 'ENVI',datatype = dtype)
   bandnames = paste(basename(file_path_sans_ext(out_file)),in_dates, sep = '_')
   wl = as.numeric(lb_datetodoy(in_dates)+365*(year(in_dates)-min(year(in_dates))))
   hdrfile = paste0(file_path_sans_ext(out_file),'.hdr')
