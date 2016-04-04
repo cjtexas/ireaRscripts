@@ -26,7 +26,7 @@
 
 lb_writeenvits = function(in_raster = in_raster, in_dates = in_dates, out_file = out_file, dtype = 'FLT4S') {
 
-  writeRaster(in_raster, filename = out_file,overwrite = T, format = 'ENVI',datatype = dtype)
+  out_raster = writeRaster(in_raster, filename = out_file,overwrite = T, format = 'ENVI',datatype = dtype)
   bandnames = paste(basename(file_path_sans_ext(out_file)),in_dates, sep = '_')
   wl = as.numeric(lb_datetodoy(in_dates)+365*(year(in_dates)-min(year(in_dates))))
   hdrfile = paste0(file_path_sans_ext(out_file),'.hdr')
