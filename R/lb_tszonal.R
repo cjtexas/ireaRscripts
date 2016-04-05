@@ -93,11 +93,11 @@ lb_tszonal = function(in_files, in_dates, shp,id_field, buffer = NULL, BS = F, f
   in_files = in_files[order]
   in_dates = in_dates[order]
 
-  if (length(out_rast) == 0) {out_rast = paste0(dirname(in_files[1]), 'temp_vrt.vrt')}   # If no raster ts output, create a temporary vrt filename to be then removed
+  # if (length(out_rast) == 0) {out_rast = paste0(dirname(in_files[1]), 'temp_vrt.vrt')}   # If no raster ts output, create a temporary vrt filename to be then removed
 
-  gdalbuildvrt(in_files, out_rast, separate = T,       # create temporary cropped ts file (vrt)
-               te = c(extent(shp_ok)@xmin,extent(shp_ok)@ymin,extent(shp_ok)@xmax,extent(shp_ok)@ymax), overwrite = T, allow_projection_difference = T)
-  in_rts = rts(brick(out_rast), time = in_dates)     # create rasterstack timeseries object
+  # gdalbuildvrt(in_files, out_rast, separate = T,       # create temporary cropped ts file (vrt)
+  #              te = c(extent(shp_ok)@xmin,extent(shp_ok)@ymin,extent(shp_ok)@xmax,extent(shp_ok)@ymax), overwrite = T, allow_projection_difference = T)
+  in_rts = rts(crop(brick(out_rast), extent(shp_ok)), time = in_dates)     # create rasterstack timeseries object
   if(length(in_nodata) == 1) {NAvalue(in_rts) = in_nodata}
   if (BS == T) {        # If backscatter series, compute logarithm of values
     values(in_rts@raster) = 10*log10( values(in_rts@raster))

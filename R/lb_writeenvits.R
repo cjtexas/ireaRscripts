@@ -34,3 +34,27 @@ lb_writeenvits = function(in_raster = in_raster, in_dates = in_dates, out_file =
   write(paste("wavelength = {", paste (wl, collapse = ', '), "}", sep=""),file=hdrfile,append=TRUE)
   gc()
 }
+
+# lb_writeenvits = function(in_raster = in_raster, in_dates = in_dates, out_file = out_file, dtype = 'FLT4S') {
+#
+#   print('writing')
+#   b <- brick(in_raster, values=FALSE)
+#   b <- writeStart(b, filename=out_file, format="ENVI",overwrite=TRUE, dtype = dtype)
+#   tr <- blockSize(b)
+#   for (i in 1:tr$n) {
+#     v <- getValuesBlock(out_raster, row=tr$row[i], nrows=tr$nrows[i])
+#     b <- writeValues(b, v, tr$row[i])
+#   }
+#   b <- writeStop(b)
+#   bandnames = paste(basename(file_path_sans_ext(out_file)),in_dates, sep = '_')
+#   wl = as.numeric(lb_datetodoy(in_dates)+365*(year(in_dates)-min(year(in_dates))))
+#   hdrfile = paste0(file_path_sans_ext(out_file),'.hdr')
+#   write(paste("Band Names = {", paste (bandnames, collapse = ', '), "}", sep=""),file=hdrfile,append=TRUE)
+#   write(paste("wavelength = {", paste (wl, collapse = ', '), "}", sep=""),file=hdrfile,append=TRUE)
+#   gc()
+#
+# }
+
+
+
+
