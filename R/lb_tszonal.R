@@ -97,7 +97,7 @@ lb_tszonal = function(in_files, in_dates, shp,id_field, buffer = NULL, BS = F, f
 
   # gdalbuildvrt(in_files, out_rast, separate = T,       # create temporary cropped ts file (vrt)
   #              te = c(extent(shp_ok)@xmin,extent(shp_ok)@ymin,extent(shp_ok)@xmax,extent(shp_ok)@ymax), overwrite = T, allow_projection_difference = T)
-  in_rts = rts(crop(brick(out_rast), extent(shp_ok)), time = in_dates)     # create rasterstack timeseries object
+  in_rts = rts(crop(stack(out_rast), extent(shp_ok)), time = in_dates)     # create rasterstack timeseries object
   if(length(in_nodata) == 1) {NAvalue(in_rts) = in_nodata}
   if (BS == T) {        # If backscatter series, compute logarithm of values
     values(in_rts@raster) = 10*log10( values(in_rts@raster))
