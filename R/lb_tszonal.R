@@ -113,7 +113,7 @@ lb_tszonal = function(in_files, in_dates, shp,id_field, buffer = NULL, BS = F, f
   }
 
   # From here onwards, take the raster time series and compute the zonal statistics
-
+browser()
   zone_raster = rasterize(shp_ok, in_rts@raster[[1]], id_field)    # rasterize the shapefile
   zones = getValues(zone_raster)   # get zones values
   ok_zones = which(is.finite(zones))  # find good zones
