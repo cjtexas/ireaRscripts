@@ -28,7 +28,10 @@ in_data = in_data [1:720,]
 # in_data$pot_infections_Interimv5[in_data$date > as.Date('2014-08-30') & in_data$date < as.Date('2015-06-15')] = 0
 in_datats_es = data.frame(date = in_data$date, risk = in_data$pot_infections_Interimv5)
 in_datats_es$country = 'ES'
-weekly_data_es = apply.weekly(in_datats_es, sum)
+in_datats_es$Risk = as.numeric(as.character(in_datats_es$risk                                            ))
+Date = as.Date(as.character(in_datats_es$date))
+in_datats_es = xts(in_datats_es,order.by = Date)
+weekly_data_es = apply.weekly(in_datats_es, mean)
 plot(weekly_data_es)
 plot(cumsum(in_datats_es))
 
