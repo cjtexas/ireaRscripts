@@ -71,6 +71,7 @@ lb_fastzonal = function (in_rts, sp_object, start_date = NULL, end_date = NULL,
     }
     if (class(shape) %in% c("SpatialPointsDataFrame", "SpatialPoints",
                             "SpatialLines", "SpatialLinesDataFrame")) {
+
       ts <- matrix(nrow = length(sel_dates), ncol = length(shape[,1]))
       for (f in 1:length(sel_dates)) {
         if (verbose == TRUE) {
@@ -138,6 +139,7 @@ lb_fastzonal = function (in_rts, sp_object, start_date = NULL, end_date = NULL,
         value <- getValues(in_rts[[sel_dates[f]]])[ok_zones]
         rDT <- data.table(value, zones)
         setkey(rDT, zones)
+        # browser()
         ts[f, 1:ncols] <- rDT[, lapply(.SD, match.fun(FUN),
                                        na.rm = na.rm), by = zones]$value
       }
