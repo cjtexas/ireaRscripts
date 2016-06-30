@@ -1,3 +1,22 @@
+#' Title
+#'
+#' @param in_rts
+#' @param sp_object
+#' @param start_date
+#' @param end_date
+#' @param id_field
+#' @param FUN
+#' @param out_format
+#' @param small
+#' @param small_method
+#' @param na.rm
+#' @param verbose
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
 lb_fastzonal = function (in_rts, sp_object, start_date = NULL, end_date = NULL,
                       id_field = NULL, FUN = "mean", out_format = "xts", small = TRUE,
                       small_method = "centroids", na.rm = TRUE, verbose = FALSE)
