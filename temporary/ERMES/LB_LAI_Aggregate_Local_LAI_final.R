@@ -1,8 +1,8 @@
 # Setting inputs and outputs --------  > Set to "MOD" or "VGT"
 
 
-script_folder = "/home/lb/Documents/aggregate_for_local/x_Manu/source_code/"
 main_folder =  "/home/lb/Documents/aggregate_for_local"
+script_folder = "/home/lb/Documents/aggregate_for_local/source_code/"
 countries <- c("it","es","gr")
 types <- c("MOD","VGT")
 fc_threshold = 0.75  # set the arable land fc threshold
