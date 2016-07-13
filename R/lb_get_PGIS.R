@@ -29,7 +29,7 @@ lb_get_PGIS = function (schema_name, table_name, con, geom_field = NULL, verbose
   # To set the PROJ4 string, enter the EPSG SRID and uncomment the
   # following two lines:
   #
-  
+
   EPSG = make_EPSG()
   p4s = EPSG[which(EPSG$code == proj$find_srid), "prj4"]
   feat = NULL

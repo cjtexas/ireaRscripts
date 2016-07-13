@@ -78,6 +78,7 @@ lb_fastzonal = function (in_rts, sp_object, start_date = NULL, end_date = NULL,
   }
   dates <- getZ(in_rts)
   sel_dates <- which(dates >= start_date & dates <= end_date)
+  # browser()
   if (length(sel_dates) > 0) {
     if (proj4string(sp_object) != proj4string(in_rts)) {
       sp_object <- spTransform(sp_object, CRS(proj4string(in_rts[[1]])))
@@ -86,7 +87,10 @@ lb_fastzonal = function (in_rts, sp_object, start_date = NULL, end_date = NULL,
     shape = crop(sp_object, extent(in_rts[[1]]))
     if (!isTRUE(all.equal(extent(shape),(extent(sp_object)), scale = 100))) {
       warning("Some features of the spatial object are outside or partially outside\n the extent of the input RasterStack ! Output for features outside rasterstack extent\n            will be set to NODATA. Outputs for features only partially inside will be retrieved\n            using only the available pixels !")
+      if (!setequal(sp_object$mdxtnq, shape$mdxtnq)){
+
       outside_feat = setdiff(sp_object$mdxtnq, shape$mdxtnq)
+      }
     }
     if (class(shape) %in% c("SpatialPointsDataFrame", "SpatialPoints",
                             "SpatialLines", "SpatialLinesDataFrame")) {
@@ -155,6 +159,7 @@ lb_fastzonal = function (in_rts, sp_object, start_date = NULL, end_date = NULL,
           message(paste0("Extracting data from date: ",
                          dates[sel_dates[f]]))
         }
+        # browser()
         value <- getValues(in_rts[[sel_dates[f]]])[ok_zones]
         rDT <- data.table(value, zones)
         setkey(rDT, zones)
@@ -175,6 +180,7 @@ lb_fastzonal = function (in_rts, sp_object, start_date = NULL, end_date = NULL,
       if (out_format == "dframe") {
         ts <- cbind(date = dates[sel_dates], ts)
       }
+
       if (small & ncols != length(shape@data[, 1])) {
         if (length(id_field) == 1) {
           miss_feat <- setdiff(as.character(shape@data[,"mdxtnq"]),names(ts))
@@ -214,12 +220,17 @@ lb_fastzonal = function (in_rts, sp_object, start_date = NULL, end_date = NULL,
         feat_names_outside = as.character(sp_object@data[,
                                                          "mdxtnq"])[outside_feat]
       }
+
       ts_outside = matrix(nrow = length(sel_dates), ncol = length(feat_names_outside))
       ts_outside = data.frame(ts_outside)
       names(ts_outside) = feat_names_outside
       ts = cbind(ts, ts_outside)
-      sortindex = match(sp_object@data$mdxtnq, names(ts))
-      ts = ts[, sortindex]
+      if (length(id_field) == 1) {
+        sortindex = match(sp_object@data[,eval(id_field)], names(ts))
+      } else {
+        sortindex = match(sp_object@data[,"mdxtnq"], names(ts))
+      }
+      ts = ts[, c(1,sortindex)]
     }
     if (out_format == "xts") {
       ts <- as.xts(ts, order.by = dates[sel_dates])

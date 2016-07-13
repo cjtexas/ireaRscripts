@@ -22,6 +22,7 @@ data_sub = droplevels(subset(data_in, Variable %in% c("Min_DOY_1st_Quarter","Min
 
 data_sub = data_sub[!((data_sub$Site == 1) & (data_sub$Country == "IND")),]
 data_sub$Site [(data_sub$Site == 4) & (data_sub$Country == "IND")] = 1
+data_sub$type = NA
 # data_ind_vi = droplevels(subset(data_in_vi, Country == 'PHL' ))
 data_in_vi$date = lb_doytodate(data_in_vi$Doy, 2014)
 data_in_vi = data_in_vi[!((data_in_vi$Site == 1) & (data_in_vi$Country == "IND")),]
@@ -86,19 +87,19 @@ get_legend<-function(myggplot){
   legend <- tmp$grobs[[leg]]
   return(legend)
 }
-p1 = phrice_plot(data_in_vi, cy = 'IT', site = "1", title = "Italy: Rice - Fallow", ann = data.frame(txt = 'a)'))
+p1 = phrice_plot(data_in_vi, cy = 'IT', site = "1", title = "IT: Rice - Fallow", ann = data.frame(txt = 'a)'))
 # legend <- get_legend(p)
-p2 = phrice_plot(data_in_vi, cy = 'IND', site = "5", title = "India: Rice - Other Crop", ann = data.frame(txt ='b)'))
-p3 = phrice_plot(data_in_vi, cy = 'PHL', site = "5", title = "Philippines: Rice - Other Crop", ann = data.frame(txt ='c)'))
+p2 = phrice_plot(data_in_vi, cy = 'IND', site = "5", title = "IND: Rice - Other Crop", ann = data.frame(txt ='b)'))
+p3 = phrice_plot(data_in_vi, cy = 'PHL', site = "5", title = "PHL: Other Crop - Rice", ann = data.frame(txt ='c)'))
 
-p4 = phrice_plot(data_in_vi, cy = 'IND', site = "1", title = "India: Rice - Fallow", ann = data.frame(txt ='d)'))
-p5 = phrice_plot(data_in_vi, cy = 'PHL', site = "4", title = "Philippines: Rice - Fallow", ann = data.frame(txt ='e)'))
+p4 = phrice_plot(data_in_vi, cy = 'IND', site = "1", title = "IND: Rice - Fallow", ann = data.frame(txt ='d)'))
+p5 = phrice_plot(data_in_vi, cy = 'PHL', site = "1", title = "PHL: Rice - Fallow", ann = data.frame(txt ='e)'))
 
-p6 = phrice_plot(data_in_vi, cy = 'IND', site = "2", title = "India: Rice - Rice", ann = data.frame(txt ='f)'))
-p7 = phrice_plot(data_in_vi, cy = 'PHL', site = "2", title = "Philippines: Rice - Rice", ann = data.frame(txt ='g)'))
+p6 = phrice_plot(data_in_vi, cy = 'IND', site = "2", title = "IND: Rice - Pulse - Rice", ann = data.frame(txt ='f)'))
+p7 = phrice_plot(data_in_vi, cy = 'PHL', site = "2", title = "PHL: Rice - Other - Rice", ann = data.frame(txt ='g)'))
 
-p8 = phrice_plot(data_in_vi, cy = 'IND', site = "3", title = "India: Rice - Rice - Rice", ann = data.frame(txt ='h)'))
-p9 = phrice_plot(data_in_vi, cy = 'PHL', site = "3", title = "Philippines: Rice - Rice - Rice", ann = data.frame(txt ='i)'))
+p8 = phrice_plot(data_in_vi, cy = 'IND', site = "3", title = "IND: Rice - Rice - Rice", ann = data.frame(txt ='h)'))
+p9 = phrice_plot(data_in_vi, cy = 'PHL', site = "3", title = "PHL: Rice - Rice - Rice", ann = data.frame(txt ='i)'))
 
 
 blank = ggplot()+geom_blank()+ theme(panel.background = element_rect(fill = 'white'))
