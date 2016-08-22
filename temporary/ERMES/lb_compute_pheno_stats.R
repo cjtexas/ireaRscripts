@@ -15,7 +15,7 @@
 lb_compute_pheno_stats = function(cc,in_rast_ricemap = NULL,in_rast_flw = NULL, in_rast_sow = NULL , out_folder = NULL, out_shapefile = out_shapefile, sow = NULL, flw = NULL, area = NULL , con = con){
 
   # Get the administrative areas layer
-  in_shp_saved = file.path(dirname(out_folder),"ancillary","in_admin.shp")
+  in_shp_saved = file.path(dirname(out_folder),"ancillary",cc,"in_admin.shp")
   dir.create(dirname(in_shp_saved), recursive = TRUE, showWarnings = FALSE)
   if (file.exists(in_shp_saved) == TRUE) {
     in_shp = lb_openshape(in_shp_saved)
@@ -36,9 +36,12 @@ lb_compute_pheno_stats = function(cc,in_rast_ricemap = NULL,in_rast_flw = NULL, 
   if (cc == 'it') {
     in_rast_area[in_rast_area == 2] = 0
     in_rast_area = setZ(stack(in_rast_area), as.Date('2015-12-31'), name = 'time')
+  } else {
+    NAvalue(in_rast_area) = 255
   }
 
   message("Computing Area")
+
   area = lb_fastzonal(in_rast_area, in_shp, id_field = "adm_id", out_format = 'dframe', FUN = sum, verbose = F)
   area[2:length(area)] = area[2:length(area)]*res(in_rast_area)[1]*res(in_rast_area)[2]/10000
   area = melt(area, id.vars = 'date')
@@ -98,7 +101,7 @@ lb_compute_pheno_stats = function(cc,in_rast_ricemap = NULL,in_rast_flw = NULL, 
     mutate(yield = NA, n_risk = NA) %>%
     mutate(gid = seq(1, length(adm_id),1)) %>%
     dplyr::select(-date.x, -date.y, -date, -shape_area)%>%
-    select(gid, adm_id, label,nuts_2, nuts_3, type, year, RiceAreaha, RiceFC,avgsow, avgsow_date, avgflw,avgflw_date, yield, n_risk)
+    select(gid, adm_id, label,nuts_2, nuts_3, type, year, RiceAreaha, RiceFC,avgsow, avgsow_date,anomsow, avgflw,avgflw_date, anomflw,yield, n_risk)
 
   polys = list()
   for(row in seq(along = out$adm_id)) {

@@ -14,8 +14,8 @@ data_in = read.csv(file_in, header = T)
 data_in_vi = read.csv(file_in_vi, header = T)
 names(data_in)
 
-levels(data_in$Country) = c('IND','IT','PHL')
-levels(data_in_vi$Country) = c('IND','IT','PHL')
+levels(data_in$Country) = c('IND','ITA','PHL')
+levels(data_in_vi$Country) = c('IND','ITA','PHL')
 
 data_sub = droplevels(subset(data_in, Variable %in% c("Min_DOY_1st_Quarter","Min_DOY_2nd_Quarter", "Min_DOY_3rd_Quarter","Min_DOY_4th_Quarter",
                                            "Max_DOY_1st_Quarter" ,"Max_DOY_2nd_Quarter","Max_DOY_3rd_Quarter","Max_DOY_4th_Quarter")))
@@ -77,7 +77,12 @@ phrice_plot = function(data, cy = cy, site = site, title = NULL, ann = ann) {
   # browser()
   # p = p + annotate("text", aes(x = 0,y = 1) ,data = ann, label = ann$txt)
   # if (!(cy == 'PHL' & site == '3')) {p = p + guides(colour=FALSE)}
-   p = p + guides(colour=FALSE)
+   # p = p + guides(colour=FALSE)+ theme(axis.title = element_text(size = 17),
+   # 																		axis.text.x = element_text(size = 12),
+   # 																		axis.text.y = element_text(size = 12),
+   # 																		plot.title = element_text(size = 15),
+   # 																		legend.text = element_text(size = 12),
+   # 																		legend.title = element_text(size = 12))
   p
 }
 
@@ -87,7 +92,7 @@ get_legend<-function(myggplot){
   legend <- tmp$grobs[[leg]]
   return(legend)
 }
-p1 = phrice_plot(data_in_vi, cy = 'IT', site = "1", title = "IT: Rice - Fallow", ann = data.frame(txt = 'a)'))
+p1 = phrice_plot(data_in_vi, cy = 'ITA', site = "1", title = "ITA: Rice - Fallow", ann = data.frame(txt = 'a)'))
 # legend <- get_legend(p)
 p2 = phrice_plot(data_in_vi, cy = 'IND', site = "5", title = "IND: Rice - Other Crop", ann = data.frame(txt ='b)'))
 p3 = phrice_plot(data_in_vi, cy = 'PHL', site = "5", title = "PHL: Other Crop - Rice", ann = data.frame(txt ='c)'))
