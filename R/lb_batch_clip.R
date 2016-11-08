@@ -46,7 +46,8 @@ lb_batch_clip = function (in_folder, out_folder, in_clip_shape, in_pattern = "*.
     if (class(check_rast) != "try-error") {
       out_file <- out_files[file]
       dir.create(dirname(out_file), recursive = TRUE, showWarnings = FALSE)
-      rast_proj <- proj4string(check_rast) # get input raster projection
+      #rast_proj <- proj4string(check_rast) # get input raster projection
+      rast_proj <- "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
       if (is.null(out_proj)) {out_proj <- rast_proj}
       in_data_type <- dataType(check_rast)
       out_dtype <- as.character(hash::values(dt_hash, in_data_type))
@@ -55,8 +56,7 @@ lb_batch_clip = function (in_folder, out_folder, in_clip_shape, in_pattern = "*.
 
         out_ext_rep <- extent(spTransform(SpatialPoints(
           data.frame(x = c(out_ext@xmin,out_ext@xmax), y = c(out_ext@ymax, out_ext@ymin)),
-          proj4string = CRS(shape_proj)),
-          rast_proj))
+              proj4string = CRS(shape_proj)),rast_proj))
       } else {
         out_ext_rep <- out_ext
       }
