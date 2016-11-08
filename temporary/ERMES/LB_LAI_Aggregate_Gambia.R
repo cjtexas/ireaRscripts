@@ -21,15 +21,15 @@
 # args <- commandArgs(TRUE)
 # t1 = Sys.time()
 # args
- # load required libraries (install if missing)
- pkg_list = c('tools','raster','sp', 'gdalUtils','rgdal','data.table','plyr', 'utils')
- pkg_test <- function(x) {
-   if (!require(x,character.only = TRUE)) {install.packages(x,dep=TRUE)
-     require(x,character.only=TRUE)}
- }
- for (pkg in pkg_list) {pkg_test(pkg)}
+# load required libraries (install if missing)
+pkg_list = c('tools','raster','sp', 'gdalUtils','rgdal','data.table','plyr', 'utils')
+pkg_test <- function(x) {
+  if (!require(x,character.only = TRUE)) {install.packages(x,dep=TRUE)
+    require(x,character.only=TRUE)}
+}
+for (pkg in pkg_list) {pkg_test(pkg)}
 
- memory.limit(8000)
+memory.limit(8000)
 # #   rasterOptions (setfileext = F)
 #
 # # Retrieve parameters from the caller

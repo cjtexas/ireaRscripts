@@ -30,7 +30,7 @@ pkg_test <- function(x) {
 for (pkg in pkg_list) {pkg_test(pkg)}
 
 memory.limit(8000)
-  rasterOptions (setfileext = F)
+rasterOptions (setfileext = F)
 
 #Retrieve parameters from the caller
 # in_raster_file = args[1]

@@ -18,8 +18,8 @@
 #' @examples
 #'
 lb_fastzonal = function (in_rts, sp_object, start_date = NULL, end_date = NULL,
-                      id_field = NULL, FUN = "mean", out_format = "xts", small = TRUE,
-                      small_method = "centroids", na.rm = TRUE, verbose = FALSE)
+                         id_field = NULL, FUN = "mean", out_format = "xts", small = TRUE,
+                         small_method = "centroids", na.rm = TRUE, verbose = FALSE)
 {
   if (!class(in_rts) %in% c("RasterStack", "RasterBrick")) {
     stop("Input is not a RasterStack or RasterBrick object")
@@ -89,7 +89,7 @@ lb_fastzonal = function (in_rts, sp_object, start_date = NULL, end_date = NULL,
       warning("Some features of the spatial object are outside or partially outside\n the extent of the input RasterStack ! Output for features outside rasterstack extent\n            will be set to NODATA. Outputs for features only partially inside will be retrieved\n            using only the available pixels !")
       if (!setequal(sp_object$mdxtnq, shape$mdxtnq)){
 
-      outside_feat = setdiff(sp_object$mdxtnq, shape$mdxtnq)
+        outside_feat = setdiff(sp_object$mdxtnq, shape$mdxtnq)
       }
     }
     if (class(shape) %in% c("SpatialPointsDataFrame", "SpatialPoints",
