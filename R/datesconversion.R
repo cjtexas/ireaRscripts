@@ -1,4 +1,4 @@
-#' Title lb_doytodate
+#' Title doytodate
 #'
 #' @description Converts a doy (or array of doys) to date format. Year has to be specified
 #'
@@ -9,14 +9,14 @@
 #' @export
 #'
 
-lb_doytodate = function(doys = doys, year = NULL){
+doytodate = function(doys = doys, year = NULL){
 
   dates = as.Date(doys - 1, origin = paste0(year, "-01-01"))
   return(dates)
 }
 
 
-#' Title lb_datetodoy
+#' Title datetodoy
 #'
 #' Converts a date (or array of dates) to doy
 #'
@@ -26,7 +26,7 @@ lb_doytodate = function(doys = doys, year = NULL){
 #' @export
 #'
 
-lb_datetodoy = function(dates = dates){
+datetodoy = function(dates = dates){
 
   doys =  as.numeric(strftime(dates, format = '%j'))
   return(doys)

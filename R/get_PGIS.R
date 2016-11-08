@@ -1,8 +1,12 @@
 #' lb_get_PGIS
 #'
 #' Derived from: http://www.r-bloggers.com/load-postgis-geometries-in-r-without-rgdal
-#' @param layer_name
+#'
 #' @param con
+#' @param schema_name
+#' @param table_name
+#' @param geom_field
+#' @param verbose
 #'
 #' @return
 #' @export

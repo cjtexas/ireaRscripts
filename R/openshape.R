@@ -1,4 +1,4 @@
-#' lb_openshape
+#' openshape
 #' @description function for easily opening a ESRI shapefile by simply specifying its filename
 #'
 #' @param shp_file filename of ESRI shapefile
@@ -13,7 +13,7 @@
 #'  shp = lb_openshape(shp_file)
 #'}
 
-lb_openshape = function(shp_file){
+openshape = function(shp_file){
 
   basename = basename(file_path_sans_ext(shp_file))
   dirname = dirname(shp_file)

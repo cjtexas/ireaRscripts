@@ -6,6 +6,7 @@ Description: What the package does (one paragraph).
 Depends:
     R (>= 3.2.2)
 Imports: QCAGUI, data.table, gdalUtils, raster, rgdal, rgeos, rts, ggplot2 ,hash
-License: GPL >3.0
+License: GPL-3
 LazyData: true
 RoxygenNote: 5.0.1
+Suggests: testthat

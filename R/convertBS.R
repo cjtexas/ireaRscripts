@@ -1,4 +1,4 @@
-#' Title
+#' convert_BS_timeseries
 #'
 #' @param in_files
 #' @param in_dates
@@ -9,7 +9,7 @@
 #' @export
 #'
 
-lb_convertBS = function(in_files,in_dates, out_rast = out_rast, shp_in){
+convert_BS_timeseries = function(in_files,in_dates, out_rast = out_rast, shp_in){
   out_rast_temp = paste0(out_rast,'.vrt')
   gdalbuildvrt(in_files, out_rast_temp, separate = T, overwrite = T, allow_projection_difference = T)
   in_rts = stack(out_rast_temp)     # create rasterstack timeseries object
