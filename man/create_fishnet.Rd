@@ -4,18 +4,49 @@
 \alias{create_fishnet}
 \title{create_fishnet}
 \usage{
-create_fishnet(in_ext = NULL, in_rast = NULL, out_name_shp = NULL,
-  cellsize = NULL, in_proj)
+create_fishnet(in_ext, cellsize, in_proj, out_raster = TRUE,
+  out_shape = FALSE, overw = FALSE, out_shapefile = NULL,
+  crop_ext = NULL, out_rastfile = NULL)
 }
 \arguments{
-\item{in_rast}{}
+\item{in_ext}{object of "Extent" class Extent on to which the grid has to be created}
 
-\item{out_name_shp}{string(optional)}
+\item{cellsize}{numeric Dimensions of the desired cells}
+
+\item{in_proj}{character proj4string projection of the desired fishnet}
+
+\item{out_raster}{logical if TRUE, then a raster file is given as output. Defaults to TRUE}
+
+\item{out_shape}{logical if TRUE, then a shape file is given as output. Defaults to FALSE}
+
+\item{overw}{}
+
+\item{out_shapefile}{character (optional) name of the output shape file}
+
+\item{crop_ext}{object of "Extent" class Extent on to which the crfeated grid has to be cropped}
+
+\item{out_rastfile}{character (optional) name of the output raster file}
 }
 \description{
-funtion to create a polygon fishnet of specified resoultion over a spatial object
- Object can be a raster file, an extent, or a generic *SP object. If a raster is selected, the
- grid is made so that upper left corner coincides with upper left corner of the raster.
-If both in_ext and in_rast are declared, the fishnet is cropped on raster extent.
+funtion to create a raster and/or polygon fishnet of specified resolution over a
+a specified spatial extent. If both in_ext and crop_ext are declared, the fishnet is created
+according to in_ext (that is, the origin depends from in_ext), and then cropped on crop_ext (this
+allows for example to create a fishnet based on a given raster/resolution, and then to automatically
+crop it on a desired extgent without "moving" the corners of the cells ")
+}
+\examples{
+\dontrun{
+  # create a fishnet over an input raster file and save it as a shapefile
+  file_in <- "/somedir/somefile.tif"
+  inrast  <- raster(file_in)
+
+  ext_rast <- extent(inrast)
+  csize    <- res(in_mask)[1]
+
+  out_file <- "/somedir/somefile.shp"
+  create_fishnet(ext_rast, cellsize = csize, out_shape = TRUE, out_shapefile = out_file,
+         overw = TRUE, out_raster = FALSE)
+
+}
 }
 
