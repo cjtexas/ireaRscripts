@@ -100,7 +100,7 @@ fastzonal = function(in_rts, sp_object, start_date = NULL, end_date = NULL,
   } else {
     if (class(sp_object) == "character") {
 
-      zone_object <- try(readOGR(dirname(sp_object), basename(file_path_sans_ext(sp_object))))
+      zone_object <- try(readOGR(dirname(sp_object), basename(file_path_sans_ext(sp_object))), silent = TRUE)
       if (class(zone_object) == "try-error") {
         zone_object <- try(raster(sp_object))
 
@@ -161,11 +161,12 @@ fastzonal = function(in_rts, sp_object, start_date = NULL, end_date = NULL,
         }
         ts <- as.data.frame(ts)
         if (length(id_field) == 1) {
-          feat_names <- as.character(shape@data[, eval(id_field)])
-          names(ts) <- c(feat_names)
+          all_feats <- as.character(shape@data[, eval(id_field)])
+          names(ts) <- c(all_feats)
         }
         else {
           names(ts) <- 1:length(shape[, 1])
+          all_feats <- as.character(names(ts))
         }
         if (out_format == "dframe") {
           ts <- cbind(date = dates[sel_dates], ts)
@@ -191,87 +192,94 @@ fastzonal = function(in_rts, sp_object, start_date = NULL, end_date = NULL,
     }
 
     zones <- getValues(zone_object)
-    ok_zones <- which(is.finite(zones))
-    zones <- zones[ok_zones]
+    # zones <- zones[which(is.finite(zones))]
     ncols <- length(unique(zones))
     ts <- matrix(nrow = length(sel_dates), ncol = ncols)
-    browser()
+
     for (f in 1:length(sel_dates)) {
       if (verbose == TRUE) {
         message(paste0("Extracting data from date: ",
                        dates[sel_dates[f]]))
       }
 
-      value <- getValues(in_rts[[sel_dates[f]]])[ok_zones]
+      value <- getValues(in_rts[[sel_dates[f]]])   #[zones]
       rDT <- data.table(value, zones)
       setkey(rDT, zones)
       # browser()
       ts[f, 1:ncols] <- rDT[, lapply(.SD, match.fun(FUN),
                                      na.rm = na.rm), by = zones]$value
     }
-
+# browser()
     ts <- as.data.frame(ts)
-    if (length(id_field) == 1) {
-      feat_names <- as.character(zone_object@data[,
-                                                eval(id_field)])[sort(unique(zones))]
-      names(ts) <- feat_names
+
+    if (sp_type == "spobject") {
+      if (length(id_field) == 1) {
+        feat_names <- as.character(zone_object@data[,
+                                                    eval(id_field)])[sort(unique(zones))]
+        names(ts) <- feat_names
+      } else {
+        feat_names <- as.character(shape@data[, "mdxtnq"])[sort(unique(zones))]
+        names(ts) <- feat_names
+      }
     } else {
-      feat_names <- as.character(shape@data[, "mdxtnq"])[sort(unique(zones))]
+      feat_names <- as.character(sort(unique(zones)))
       names(ts) <- feat_names
     }
     if (out_format == "dframe") {
       ts <- cbind(date = dates[sel_dates], ts)
     }
-
-    if (small & ncols != length(shape@data[, 1])) {
-      if (length(id_field) == 1) {
-        miss_feat <- setdiff(as.character(shape@data[,"mdxtnq"]),names(ts))
-        pos_missing <- which(as.character(shape@data[,"mdxtnq"]) %in% miss_feat)
-      } else {
-        pos_missing <- miss_feat <- which(as.character(shape@data[,"mdxtnq"]) %in% miss_feat)
-      }
-      shpsub <- shape[pos_missing, ]
-      ts_mis <- matrix(nrow = length(sel_dates), ncol = length(pos_missing))
-      for (f in 1:length(sel_dates)) {
-        if (verbose == TRUE) {
-          print(paste0("Extracting data from date: ",
-                       dates[sel_dates[f]]))
-        }
-        if (small_method == "centroids") {
-          ts_mis[f, ] <- extract(in_rts[[sel_dates[f]]],
-                                 coordinates(shpsub), fun = mean)
+    if (sp_type != "rastobject"){
+      if (small & ncols != length(all_feats)){
+        if (length(id_field) == 1) {
+          miss_feat   <- setdiff(as.character(shape@data[,"mdxtnq"]),names(ts))
+          pos_missing <- which(as.character(shape@data[,"mdxtnq"]) %in% miss_feat)
         } else {
-          ts_mis[f, ] <- extract(in_rts[[sel_dates[f]]],
-                                 shpsub, fun = mean)
+          pos_missing <- miss_feat <- which(as.character(shape@data[,"mdxtnq"]) %in% miss_feat)
         }
+        shpsub <- shape[pos_missing, ]
+        ts_mis <- matrix(nrow = length(sel_dates), ncol = length(pos_missing))
+        for (f in 1:length(sel_dates)) {
+          if (verbose == TRUE) {
+            print(paste0("Extracting data from date: ",
+                         dates[sel_dates[f]]))
+          }
+          if (small_method == "centroids") {
+            ts_mis[f, ] <- extract(in_rts[[sel_dates[f]]],
+                                   raster::coordinates(shpsub), fun = mean)
+          } else {
+            ts_mis[f, ] <- extract(in_rts[[sel_dates[f]]],
+                                   shpsub, fun = mean)
+          }
+        }
+        colnames(ts_mis) <- miss_feat
+        ts <- cbind(ts, ts_mis)
       }
-      colnames(ts_mis) <- miss_feat
-      ts <- cbind(ts, ts_mis)
     }
-    file.remove(tempraster)
-    file.remove(tempshape)
+    if (sp_type == "spobject") {
+      file.remove(tempraster)
+      file.remove(tempshape)
 
+      if (exists("outside_feat")) {
+        if (length(id_field) == 1) {
+          feat_names_outside = as.character(zone_object@data[,
+                                                             eval(id_field)])[outside_feat]
+        }
+        else {
+          feat_names_outside = as.character(zone_object@data[,
+                                                             "mdxtnq"])[outside_feat]
+        }
 
-    if (exists("outside_feat")) {
-      if (length(id_field) == 1) {
-        feat_names_outside = as.character(zone_object@data[,
-                                                         eval(id_field)])[outside_feat]
+        ts_outside = matrix(nrow = length(sel_dates), ncol = length(feat_names_outside))
+        ts_outside = data.frame(ts_outside)
+        names(ts_outside) = feat_names_outside
+        ts = cbind(ts, ts_outside)
+        if (length(id_field) == 1) {
+          sortindex = match(zone_object@data[,eval(id_field)], names(ts))
+        } else {
+          sortindex = match(zone_object@data[,"mdxtnq"], names(ts))
+        }
+        ts = ts[, c(1,sortindex)]
       }
-      else {
-        feat_names_outside = as.character(zone_object@data[,
-                                                         "mdxtnq"])[outside_feat]
-      }
-
-      ts_outside = matrix(nrow = length(sel_dates), ncol = length(feat_names_outside))
-      ts_outside = data.frame(ts_outside)
-      names(ts_outside) = feat_names_outside
-      ts = cbind(ts, ts_outside)
-      if (length(id_field) == 1) {
-        sortindex = match(zone_object@data[,eval(id_field)], names(ts))
-      } else {
-        sortindex = match(zone_object@data[,"mdxtnq"], names(ts))
-      }
-      ts = ts[, c(1,sortindex)]
     }
     if (out_format == "xts") {
       ts <- as.xts(ts, order.by = dates[sel_dates])
@@ -280,5 +288,6 @@ fastzonal = function(in_rts, sp_object, start_date = NULL, end_date = NULL,
   } else {
     warning("Selected time range does not overlap with the one of the rasterstack input dataset !")
   }
+  gc()
 }
 

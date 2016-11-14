@@ -17,6 +17,8 @@
 #'
 #' @importFrom sp GridTopology SpatialGridDataFrame CRS
 #' @importFrom raster setValues writeRaster crop brick
+#' @importFrom rgdal readOGR writeOGR
+
 #' @return
 #' @export
 #'
@@ -39,6 +41,7 @@ create_fishnet <- function(in_ext, cellsize, in_proj, out_raster = TRUE, out_sha
                            overw = FALSE, out_shapefile = NULL, crop_ext = NULL,
                            out_rastfile = NULL) {
 
+  dir.create(dirname(out_rastfile), recursive = TRUE, showWarnings = FALSE)
   if (is.null(cellsize)){
     stop("cellsize not specified !")
   }
@@ -78,6 +81,7 @@ create_fishnet <- function(in_ext, cellsize, in_proj, out_raster = TRUE, out_sha
 
     if (!is.null(crop_ext)) {
       out_raster <- crop(out_raster, crop_ext)
+      out_raster[] <- seq(1, dim(out_raster)[1]*dim(out_raster)[2],1)
     }
 
     writeRaster(out_raster, out_rastfile, overwrite = TRUE)
