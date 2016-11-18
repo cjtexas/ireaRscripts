@@ -41,7 +41,7 @@ create_fishnet <- function(in_ext, cellsize, in_proj, out_raster = TRUE, out_sha
                            overw = FALSE, out_shapefile = NULL, crop_ext = NULL,
                            out_rastfile = NULL) {
 
-  dir.create(dirname(out_rastfile), recursive = TRUE, showWarnings = FALSE)
+  # dir.create(dirname(out_rastfile), recursive = TRUE, showWarnings = FALSE)
   if (is.null(cellsize)){
     stop("cellsize not specified !")
   }

@@ -133,6 +133,7 @@ MODISmasker <- function(){
            t_srs = mod_proj, overwrite = TRUE, ot = 'Byte', of = "ENVI")
 
   mask_repr     <- raster(mask_reprojfile)
+  ext_mask_sinu <- extent(mask_repr)
   zones_rast <- "/home/lb/Temp/buttami/fishrastw.tif"
 
   # find the MODIs tiles which intersect the mask
@@ -164,18 +165,16 @@ MODISmasker <- function(){
   # Compute zonal statistics on MODIS pixels using the mask as input and a user function to extract
   # values from the mask
 
-  zonestats <- fastzonal(raster(mask_alignedfile), sp_object = zones_raster_hr)
+  zonestats <- fastzonal(raster(mask_alignedfile), sp_object = zones_raster_hr, out_format = 'dframe')
 
-  cell_nos = as.numeric(names(zonestats)[2:length(names(zonestats))])
-
-  outrast = raster(zones_rast)
+  outrast   <-  raster(zones_rast)
   outrast[] <- (as.numeric(zonestats[2:length(names(zonestats))]))
 
-
-
-
-
-
-
+  rcl_mat <- list(
+    list(start = 0, end  = 0.74999, new = 0),
+    list(start = 0.75, end  = 1.1, new = 1)
+  )
+  outfile <- "/home/lb/Temp/buttami/Gmabia_lcMask_075.envi"
+  outmask = rast_reclass(outrast, rcl_mat, out_rast = outfile, r_out = TRUE, ovr = TRUE)
 
 }

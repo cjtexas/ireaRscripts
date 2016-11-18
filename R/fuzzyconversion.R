@@ -9,7 +9,7 @@
 #' See help for "calibrate" function in QCA library for details.
 #' @export
 #'
-#' @importFrom QCAGUI calibrate
+
 #'
 
 lb_fuzzyconversion = function(in_raster, thresholds , ...) {

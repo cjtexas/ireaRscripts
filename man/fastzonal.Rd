@@ -2,7 +2,7 @@
 % Please edit documentation in R/fastzonal.R
 \name{fastzonal}
 \alias{fastzonal}
-\title{Title}
+\title{fastzonal}
 \usage{
 fastzonal(in_rts, sp_object, start_date = NULL, end_date = NULL,
   start_band = NULL, end_band = NULL, id_field = NULL, FUN = "mean",
@@ -13,7 +13,7 @@ fastzonal(in_rts, sp_object, start_date = NULL, end_date = NULL,
 \item{end_band}{}
 }
 \description{
-Title
+fastzonal
 }
 \examples{
 

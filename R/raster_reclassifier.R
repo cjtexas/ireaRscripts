@@ -39,7 +39,7 @@
 #'
 #' reclass_file = "/home/lb/Temp/buttami/pippo_reclass.tif"
 #' outmask = raster_reclassifier(in_mask, rcl_mat, out_rast = reclass_file,
-#' r_out = TRUE, ovr = TRUE)
+#'                                 r_out = TRUE, ovr = TRUE)
 #' summary(outmask)
 #' }
 
