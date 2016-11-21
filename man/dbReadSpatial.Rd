@@ -24,15 +24,17 @@ An object of class \code{\linkS4class{SpatialPixelsDataFrame}},
 depending on the specific geometry which is read.
 }
 \description{
-Import a spatial table / view / materialised view from a PostgreSQL database into a Spatial*DataFrame object.
+Import a spatial table / view / materialised view from a PostgreSQL
+database into a \code{Spatial*DataFrame} object.
 }
 \details{
-The function reads a table / view / materialised view from a database PostgreSQL, in which
-a spatial column (format geom) must be present, and import it in R as a "sp" object (
-SpatialPixelsDataFrame, SpatialLinesDataFrame or SpatialPolygonsDataFrame).
+The function reads a PostGIS table / view / materialised view from a database PostgreSQL,
+in which a spatial column (format geom) must be present, and import it in \code{R} as a \code{sp} object
+(\code{\linkS4class{SpatialPixelsDataFrame}}, \code{\linkS4class{SpatialLinesDataFrame}} or
+\code{\linkS4class{SpatialPolygonsDataFrame}}).
 The name of the geometric column is automatically retrieved, while the primary key is retrieved
 only reading a table (in case a view or materialised view is read, it must be specified with the
-parameter "pkey").
+parameter \code{pkey}).
 }
 \note{
 License: GPL 3.0
