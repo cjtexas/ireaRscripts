@@ -15,7 +15,7 @@ outmaskfile <- "D:/Documents/temp/quality_phenorice/ITA/mask_quality.tif"
 
 inmask = raster(in_maskfile)
 mask_proj <- proj4string(inmask)
-ext_mask  <- extent(outmask)
+# ext_mask  <- extent(outmask)
 mask_reprojfile <- tempfile(tmpdir= tempdir(),fileext = ".tif")
 
 gdalwarp(in_maskfile, mask_reprojfile, s_srs = mask_proj,
@@ -29,7 +29,7 @@ create_fishnet(in_ext, out_shape = FALSE, cellsize = 231.656358,
 
 zones_raster_hr <- tempfile(tmpdir = tempdir(), fileext = '.tif')
 gdal_translate(zones_raster, zones_raster_hr, tr = raster::res(mask_repr),
-               te = extent(mask_repr)[c(1,3,2,4)], overwrite = T, tap = T, ot = "uint16")
+               te = extent(mask_repr)[c(1,3,2,4)], overwrite = T, tap = T, ot = "uint32")
 
 mask_alignedfile <- tempfile(tmpdir = tempdir(), fileext = '.tif')
 align_rasters(mask_reprojfile, zones_raster_hr, mask_alignedfile)
@@ -39,12 +39,12 @@ align_rasters(mask_reprojfile, zones_raster_hr, mask_alignedfile)
 
 zonestats <- fastzonal(raster(mask_alignedfile), sp_object = zones_raster_hr, out_format = 'dframe')
 
- outrast   <-  raster(zones_rast)
+ outrast   <-  raster(zones_raster)
 outrast[] <- (as.numeric(zonestats[2:length(names(zonestats))]))
 
 rcl_mat <- list(
   list(start = 0, end  = 0.75, new = NA),
-  list(start = 0.75, end  = 4, new = 0)
+  list(start = 0.75, end  = 4, new = 1)
 )
 
 outmask = rast_reclass(outrast, rcl_mat, out_rast = outmaskfile, r_out = TRUE, ovr = TRUE)
