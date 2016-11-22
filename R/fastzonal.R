@@ -57,9 +57,7 @@ fastzonal = function(in_rts,
   }
   
   if (!class(getZ(in_rts)) == "Date") {
-    message(
-      "Input doesn't contain valid dates in its 'Z' attribute\nBand numbers will be used instead on the outputs"
-    )
+    message("Input doesn't contain valid dates in its 'Z' attribute\nBand numbers will be used instead on the outputs")
     ts_check = FALSE
   } else {
     dates <- getZ(in_rts)
@@ -97,11 +95,8 @@ fastzonal = function(in_rts,
     stop("start_date larger than end_date")
   }
   
-  if (!class(end_band) == "numeric") {
-    {
-      stop("end_band is not numeric")
-    }
-  }
+  if (!class(end_band) == "numeric") { stop("end_band is not numeric")}
+  
   
   # if (start_date > end_date) {
   #   stop("start_date larger than end_date")
@@ -146,8 +141,7 @@ fastzonal = function(in_rts,
     }
   }
       if (proj4string(zone_object) != proj4string(in_rts)) {
-        zone_object <-
-          spTransform(zone_object, CRS(proj4string(in_rts[[1]])))
+        zone_object <- spTransform(zone_object, CRS(proj4string(in_rts[[1]])))
       }
       
       zone_object@data$mdxtnq = seq(1:length(zone_object@data[, 1]))
