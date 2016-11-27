@@ -1,48 +1,21 @@
-#' fastzonal
-#'
-#' @param in_rts
-#' @param zone_object
-#' @param start_date
-#' @param end_date
-#' @param id_field
-#' @param FUN
-#' @param out_format
-#' @param small
-#' @param small_method
-#' @param na.rm
-#' @param verbose
-#' @param start_band
-#' @param end_band
-#' @param maxchunk 
-#'
-#' @importFrom xts as.xts
-#' @importFrom rgdal writeOGR readOGR
-#' @importFrom sp proj4string spTransform CRS
-#' @importFrom tools file_path_sans_ext
-#' @importFrom raster getValues crop extent getZ extract rasterize res
-#' @importFrom tools file_path_sans_ext
-#' @importFrom gdalUtils gdal_rasterize
-#' @return
-#' @export
-#'
-#' @examples
-#'
-fastzonal = function(in_rts,
-                     zone_object,
-                     start_date = NULL,
-                     end_date   = NULL,
-                     start_band = NULL,
-                     end_band   = NULL,
-                     id_field   = NULL,
-                     FUN        = "mean",
-                     out_format = "xts",
-                     small      = TRUE,
-                     small_method = "centroids",
-                     na.rm      = TRUE,
-                     verbose    = FALSE,
-                     maxchunk   = 30E6)
+function(in_rts,
+                         zone_object,
+                         mask_object = NULL,
+                         start_date  = NULL,
+                         end_date    = NULL,
+                         start_band  = NULL,
+                         end_band    = NULL,
+                         id_field    = NULL,
+                         FUN         = "mean",
+                         out_format  = "xts",
+                         small       = TRUE,
+                         small_method = "centroids",
+                         na.rm       = TRUE,
+                         verbose     = FALSE,
+                         maxchunk    = 50E6)
 {
-  
+  # Check input types and requesed dates/bands -----
+  # Check input types and requesed dates/bands -----
   ras_type   <-  check_spatype(in_rts)
   zone_type  <-  check_spatype(zone_object)
   if (!ras_type %in% "rastobject") {
@@ -61,22 +34,22 @@ fastzonal = function(in_rts,
   }
   
   if (is.null(start_date) & is.null(start_band)) {
-    start_band <- as.integer(1)
+    if (ts_check) {start_band = ymd(dates[1])} else {start_band = as.integer(1)}
     if (verbose) {message("Starting date/Starting band not provided - Using the first layer in the stack")}
   }
   
   if (is.null(end_date) & is.null(end_band)) {
-    end_band <- nlayers(in_rts)
+   if (ts_check) {end_band = ymd(dates[nlayers(in_rts)])} else {end_band = as.integer(nlayers(in_rts))}
     if (verbose) {message("Starting date/Starting band not provided - Using the last layer in the stack")}
   }
-  if (!class(start_date) %in% c("Date", "POSIXct", "POSIXlt")) {
+  if (!class(start_band) %in% c("Date", "POSIXct", "POSIXlt")) {
     start_date = try(as.Date(start_date), silent = TRUE)
     if (class(start_date) == "try-error") {
       warning("start_date is not a Date object or string cohercible to date - it will be ignored")
       start_date <- as.integer(1)
     }
   }
-  if (!class(end_date) %in% c("Date", "POSIXct", "POSIXlt")) {
+  if (!class(end_band) %in% c("Date", "POSIXct", "POSIXlt")) {
     end_date = try(as.Date(end_date), silent = TRUE)
     if (class(end_date) == "try-error") {
       warning("end_date is not a Date object or string cohercible to date - it will be ignored")
@@ -84,14 +57,13 @@ fastzonal = function(in_rts,
     }
   }
   
-  if (!class(start_band) == "integer") { stop("start_band is not numeric") }
+  # if (!class(start_band) == "integer") { stop("start_band is not numeric") }
+  # if (!class(end_band)   == "integer") { stop("end_band is not numeric")}
   
-  if (!class(end_band)   == "integer") { stop("end_band is not numeric")}
+  if (start_band > end_band) {
+    stop("start_date larger than end_date")
+  }
   
-  
-  # if (start_date > end_date) {
-  #   stop("start_date larger than end_date")
-  # }
   if (!small_method %in% c("centroids", "full")) {
     warning("Unknown 'small_method' value - resetting to 'centroids'")
   }
@@ -100,8 +72,6 @@ fastzonal = function(in_rts,
       message("Unknown 'out_format' value - resetting to 'xts'")
     out_format = "xts"
   }
-  
-  # check which kind of object was passed in input: Spatial object, raster file , shape name or raster name
   
   if (length(id_field) != 0) {
     if (!id_field %in% names(zone_object)) {
@@ -116,13 +86,16 @@ fastzonal = function(in_rts,
     dates <- seq(1, nlayers(in_rts), 1)
   }
   
+  # if not dates passed, or in_rts doesn't have dates, requested dates
+  # replaced by band numbers
   if (class(start_date) == "integer" & class(end_date) == "integer") {
     sel_dates <- seq(start_band, end_band, 1)
   } else {
-    sel_dates <- which(dates >= start_date & dates <= end_date)
+    sel_dates <- which(dates >= start_band & dates <= end_band)
   }
-  
+ # Start cycling on dates/bands -----
   if (length(sel_dates) > 0) {
+    
     
     if (check_spatype(zone_object) %in% c("spfile", "spobject")) {
       
@@ -138,14 +111,15 @@ fastzonal = function(in_rts,
       if (!isTRUE(all.equal(extent(zone_cropped), (extent(zone_object)), scale = 100))) {
         warning(
           "Some features of the spatial object are outside or partially outside\n the extent of the input RasterStack !
-          Output for features outside rasterstack extent\n will be set to NODATA. Outputs for features only partially inside\n
-          will be retrieved\n using only the available pixels !"
+Output for features outside rasterstack extent\n will be set to NODATA. Outputs for features only partially inside\n
+will be retrieved\n using only the available pixels !"
         )
         if (!setequal(zone_object$mdxtnq, zone_cropped$mdxtnq)) {
           outside_feat = setdiff(zone_object$mdxtnq, zone_cropped$mdxtnq)
         }
       }
       
+      # Extraction on points  or lines -----
       if (class(zone_cropped) %in% c("SpatialPointsDataFrame","SpatialPoints","SpatialLines", 
                                      "SpatialLinesDataFrame")) {
         if (verbose) { message("On point and lines shapefiles, the standard `extract` function is used. 
@@ -172,7 +146,8 @@ fastzonal = function(in_rts,
         if (out_format == "dframe") {
           ts <- cbind(date = dates[sel_dates], ts)
         }
-      } else {   # On polygon shapes, rasterize the polygons
+      } else {   
+        # Extraction on polygons: raterize shape ----
         
         if (verbose) { message("Rasterizing shape")}
         if (verbose) { message("Writing temporary shapefile")}
@@ -187,27 +162,25 @@ fastzonal = function(in_rts,
         if (max(zone_cropped@data$mdxtnq) <= 255) {
           ot = "Byte"
         } else {
-          if (max(zone_cropped@data$mdxtnq) <= 65536) {
-            ot = "Int16"
-          } else {
-            ot = "Int32"
-          }
+          ot <- ifelse(max(zone_cropped@data$mdxtnq) <= 65536, "Int16", "Int32")
         }
         gdal_rasterize(tempshape, tempraster, tr = raster::res(in_rts), te = extent(in_rts)[c(1, 3, 2, 4)], a = "mdxtnq", ot = ot)
         zone_object <- raster(tempraster)
       }
     } else {
-      
+      # Extraction on raster: crop raster on shape ----
       if (check_spatype(zone_object) == "rastfile") { zone_object = raster(zone_object)}
       zone_object = crop(zone_object, extent(in_rts[[1]]))
       
     }
     
+    # Setup chunks ----
     n_cells   <- nrow(zone_object) * ncol(zone_object)
     ncols     <- ncol(zone_object)
     n_chunks  <- floor(n_cells / maxchunk)
-    full_data <-  list()
+    full_data <- list()
     
+    # Start data extraction ----
     for (f in 1:length(sel_dates)) {
       if (verbose == TRUE) {
         message(paste0("Extracting data from date: ",
@@ -216,77 +189,81 @@ fastzonal = function(in_rts,
       
       if (n_chunks > 1) {
         for (chunk in seq_len(n_chunks)) {
+          
+          # Import data chunk ----
           startrow <- ifelse(chunk == 1, 1, (chunk - 1) * ceiling(nrow(zone_object) / n_chunks)) 
           nrows    <- ifelse(chunk != n_chunks, ceiling(nrow(zone_object) / n_chunks),
                              nrow(zone_object))
-          # endrow   <- 
           message(chunk, " ", startrow, " ",  startrow + (nrows - 1))
-          full_data[[chunk]] <-
-            data.table(
-              value = getValues(in_rts[[sel_dates[f]]], startrow, ifelse(chunk == 1, nrows - 1, nrows)),
-              zones = getValues(zone_object, startrow, ifelse(chunk == 1, nrows - 1, nrows))
-            )
-          #gc()
+          # put current chunk in "full_data
+          full_data[[chunk]] <- data.table(
+            value = getValues(in_rts[[sel_dates[f]]], startrow, ifelse(chunk == 1, nrows - 1, nrows)),
+            zones = getValues(zone_object, startrow, ifelse(chunk == 1, nrows - 1, nrows)), 
+            key = 'zones') %>% 
+              subset( zones != 0) # remove data outside polygons (== zones = 0 ) 
+          gc()
         }
+        gc()
+        # Add to the full data ----
+        browser()
         full_data <- rbindlist(full_data)
         
       } else {
         full_data <- data.table(
-          value = getValues(in_rts[[sel_dates[f]]]),
-          zones = getValues(zone_object)
-        )
+          value = getValues(in_rts[[sel_dates[f]]]), zones = getValues(zone_object)) %>% 
+            subset( zones != 0) # remove data outside polygons (== zones = 0 ) 
       }
-      #gc()
+      
       setkey(full_data, "zones")
-      #gc()
       
       if (f == 1) {
         zones <- unique(full_data)$zones
-        
-        ts <-
-          matrix(nrow = length(sel_dates), ncol = length(zones))
+        ts <- matrix(nrow = length(sel_dates), ncol = length(zones))
       }
-      # browser()
-      ts[f,] <- full_data[, lapply(.SD, match.fun(FUN),
-                                   na.rm = na.rm), by = zones]$value
+      
+      # Apply the aggregation function if needed, otherwise just extract all pixrels
+      if (FUN != 'null') {
+        ts[f,] <- full_data[, lapply(.SD, match.fun(FUN),
+                                     na.rm = na.rm), by = zones]$value
+      } else {
+        browser()
+      }
     }
-    # browser()
-    ts <- as.data.frame(ts)
     
+    # Put the correct names on columns -----
+    # ts <- as.data.frame(ts)
     if (zone_type == "spobject") {
       if (length(id_field) == 1) {
         feat_names <- as.character(zone_object@data[,
                                                     eval(id_field)])[sort(unique(zones))]
         names(ts) <- feat_names
       } else {
-        feat_names <-
-          as.character(zone_cropped@data[, "mdxtnq"])[sort(unique(zones))]
+        feat_names <- as.character(zone_cropped@data[, "mdxtnq"])[sort(unique(zones))]
         names(ts) <- feat_names
       }
     } else {
       feat_names <- as.character(sort(unique(zones)))
       names(ts) <- feat_names
     }
+    
+    # prepare data.frame output if needed ----
     if (out_format == "dframe") {
       ts <- cbind(date = dates[sel_dates], ts)
     }
     
+    # On input shapefile: add "missing features"  using small poly extraction if requested ----
+    
     if (zone_type %in% c("spobject", "spfile")) {
       if (small & ncols != length(all_feats)) {
         if (length(id_field) == 1) {
-          miss_feat   <-
-            setdiff(as.character(zone_cropped@data[, "mdxtnq"]), names(ts))
-          pos_missing <-
-            which(as.character(zone_cropped@data[, "mdxtnq"]) %in% miss_feat)
+          miss_feat   <- setdiff(as.character(zone_cropped@data[, "mdxtnq"]), names(ts))
+          pos_missing <- which(as.character(zone_cropped@data[, "mdxtnq"]) %in% miss_feat)
         } else {
-          pos_missing <-
-            miss_feat <-
-            which(as.character(zone_cropped@data[, "mdxtnq"]) %in% miss_feat)
+          pos_missing <- miss_feat <- which(as.character(zone_cropped@data[, "mdxtnq"])
+                                            %in% names(ts))
         }
         shpsub <- zone_cropped[pos_missing,]
-        ts_mis <-
-          matrix(nrow = length(sel_dates),
-                 ncol = length(pos_missing))
+        ts_mis <- matrix(nrow = length(sel_dates), ncol = length(pos_missing))
         for (f in 1:length(sel_dates)) {
           if (verbose == TRUE) {
             print(paste0("Extracting data from date: ",
@@ -304,18 +281,17 @@ fastzonal = function(in_rts,
         ts <- cbind(ts, ts_mis)
       }
     }
+    
     if (zone_type == "spobject") {
       file.remove(tempraster)
       file.remove(tempshape)
-      
+      # If there are features outside the raster extent, set the correspondig output to NA -----
       if (exists("outside_feat")) {
         if (length(id_field) == 1) {
-          feat_names_outside = as.character(zone_object@data[,
-                                                             eval(id_field)])[outside_feat]
+          feat_names_outside = as.character(zone_object@data[, eval(id_field)])[outside_feat]
         }
         else {
-          feat_names_outside = as.character(zone_object@data[,
-                                                             "mdxtnq"])[outside_feat]
+          feat_names_outside = as.character(zone_object@data[, "mdxtnq"])[outside_feat]
         }
         
         ts_outside = matrix(nrow = length(sel_dates),
@@ -331,13 +307,15 @@ fastzonal = function(in_rts,
         ts = ts[, c(1, sortindex)]
       }
     }
+    
+    # Convert output to xts if necessary ------
     if (out_format == "xts") {
       ts <- as.xts(ts, order.by = dates[sel_dates])
     }
-    #gc()
+    gc()
     ts
   } else {
     warning("Selected time range does not overlap with the one of the rasterstack input dataset !")
   }
-  #gc()
+  gc()
 }
