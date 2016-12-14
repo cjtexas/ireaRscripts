@@ -1,4 +1,4 @@
-function(in_rts,
+fastzonal = function(in_rts,
                          zone_object,
                          mask_object = NULL,
                          start_date  = NULL,
