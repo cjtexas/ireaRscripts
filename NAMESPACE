@@ -2,6 +2,7 @@
 
 export(MODISmasker)
 export(batch_clip)
+export(check_spatype)
 export(convert_BS_timeseries)
 export(create_fishnet)
 export(datetodoy)
