@@ -24,7 +24,7 @@ data_sub = data_sub[!((data_sub$Site == 1) & (data_sub$Country == "IND")),]
 data_sub$Site [(data_sub$Site == 4) & (data_sub$Country == "IND")] = 1
 data_sub$type = NA
 # data_ind_vi = droplevels(subset(data_in_vi, Country == 'PHL' ))
-data_in_vi$date = lb_doytodate(data_in_vi$Doy, 2014)
+data_in_vi$date = doytodate(data_in_vi$Doy, 2014)
 data_in_vi = data_in_vi[!((data_in_vi$Site == 1) & (data_in_vi$Country == "IND")),]
 data_in_vi$Site [(data_in_vi$Site == 4) & (data_in_vi$Country == "IND")] = 1
 
@@ -37,7 +37,7 @@ phrice_plot = function(data, cy = cy, site = site, title = NULL, ann = ann) {
   data_ph$type = as.factor(data_ph$type)
   data_ph = rbind(data_ph, data_ph)
   data_ph$y = -0.1
-  data_ph$date = lb_doytodate(data_ph$Value, 2014)
+  data_ph$date = doytodate(data_ph$Value, 2013)
   # if (cy == "IND") {
   # 	data_ph$date = data_ph$datde
   # }
@@ -57,23 +57,23 @@ phrice_plot = function(data, cy = cy, site = site, title = NULL, ann = ann) {
   p = p + geom_line(aes(x = date, y = NDFI/10000, colour = 'NDFI'),size = 1)
   p = p + geom_point(aes(x = date , y = EVI_Raw/10000, colour = 'EVI - Raw') ,pch = 5)
   p = p + geom_line(data = data_ph, aes(x = date,  y = y, color = type, group = quart), lty = 3,size = 1.1)
-  p = p + guides(colour=guide_legend(override.aes=list(linetype=c(3,3,0,1,1),shape=c(NA,NA,5,NA,NA))))
+  # p = p + guides(colour=guide_legend(override.aes=list(linetype=c(3,3,0,1,1),shape=c(NA,NA,5,NA,NA))))
+  # if ((cy == 'IT') |  (cy == 'IND')){ data_vi$date = data_vi$date - 365}
   if ((cy == 'IT') |  (cy == 'IND')){
-  	p = p + scale_x_date(date_breaks = "2 month", limits = c(as.Date("2013-09-01"), as.Date("2014-10-31")),date_labels = "%b" )
-  } else {
-  	p = p + scale_x_date(date_breaks = "2 month", limits = c(as.Date("2013-10-31"), as.Date("2014-12-31")),date_labels = "%b" )
+  	p = p + scale_x_date(date_breaks = "2 month", limits = c(as.Date("2012-09-01"), as.Date("2013-10-31")),date_labels = "%b")  } else {
+  	p = p + scale_x_date(date_breaks = "2 month", limits = c(as.Date("2012-10-31"), as.Date("2013-12-31")),date_labels = "%b")
   }
-  p = p + coord_cartesian(ylim = c(0,0.8))
+  p = p + coord_cartesian(ylim = c(0,1))
   p = p + ggtitle(title) + xlab('Date')+ ylab("VI") + scale_colour_manual('',values = c('orange','chartreuse3','black','red','blue'))
   
   if ((cy == 'IT') |  (cy == 'IND')){
-  	p = p + annotate("text", x = as.Date("2013-10-30"), y = 0.80, label = paste0("Lat: ", as.character(round(data_vi$N[1], 2)), " - Lon: ", as.character(round(data_vi$E[1], 2))), size = 3) 
+  	p = p + annotate("text", x = as.Date("2012-10-30"), y = 0.80, label = paste0("Lat: ", as.character(round(data_vi$N[1], 2)), " - Lon: ", as.character(round(data_vi$E[1], 2))), size = 3) 
   } else {
-  	p = p + annotate("text", x = as.Date("2013-12-30"), y = 0.80, label = paste0("Lat: ", as.character(round(data_vi$N[1], 2)), " - Lon: ", as.character(round(data_vi$E[1], 2))), size = 3) 
+  	p = p + annotate("text", x = as.Date("2012-12-30"), y = 0.80, label = paste0("Lat: ", as.character(round(data_vi$N[1], 2)), " - Lon: ", as.character(round(data_vi$E[1], 2))), size = 3) 
   }
   
-  p = p + theme(legend.position= 'bottom',legend.direction = 'horizontal', legend.background = element_rect(colour = 'black'))
-  p = p + theme(legend.text= element_text())
+  # p = p + theme(legend.position= 'bottom',legend.direction = 'horizontal', legend.background = element_rect(colour = 'black'))
+  # p = p + theme(legend.text = element_text())
   # browser()
   # p = p + annotate("text", aes(x = 0,y = 1) ,data = ann, label = ann$txt)
   # if (!(cy == 'PHL' & site == '3')) {p = p + guides(colour=FALSE)}
@@ -92,8 +92,12 @@ get_legend<-function(myggplot){
   legend <- tmp$grobs[[leg]]
   return(legend)
 }
+
+
+
+
 p1 = phrice_plot(data_in_vi, cy = 'ITA', site = "1", title = "ITA: Rice - Fallow", ann = data.frame(txt = 'a)'))
-# legend <- get_legend(p)
+legend <- get_legend(p)
 p2 = phrice_plot(data_in_vi, cy = 'IND', site = "5", title = "IND: Rice - Other Crop", ann = data.frame(txt ='b)'))
 p3 = phrice_plot(data_in_vi, cy = 'PHL', site = "5", title = "PHL: Other Crop - Rice", ann = data.frame(txt ='c)'))
 
@@ -115,4 +119,6 @@ p = ggplot(data_in_vi, aes(x = date, y = EVI_Raw )) + theme_bw()
 p = p + geom_point() + geom_line(aes(x = date, y = EVI_Smooth)) + facet_grid(Country~Site, scales = "free_x")
 p = p + scale_x_date(date_breaks = "2 month", limits = c(as.Date("2013-05-01"), as.Date("2014-06-01")),date_labels = "%m %d")
 p1
+
+p2 = p1 +
 

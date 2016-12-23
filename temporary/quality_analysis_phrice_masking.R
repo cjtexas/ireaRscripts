@@ -8,7 +8,7 @@ in_mod       <- "/home/lb/Temp/quality_phenorice/PHL/QUALITY_ts_input_2012_177_2
 inmodrast    <- raster(in_mod)
 mod_proj     <- "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
 in_ext       <- extent(inmodrast)
-zones_raster <- "/home/lb/Temp/quality_phenorice/PHL/mask_fishnet.tif"
+zones_raster <- "/home/lb/Temp/quality_phenorice/PHL/mask_fishnet_WS.tif"
 in_maskfile  <- "/home/lb/Temp/quality_phenorice/PHL/Rice_WS_Sinusoidal.tif"
 outmaskfile  <- "/home/lb/Temp/quality_phenorice/PHL/mask_quality_WS.tif"
 
@@ -39,7 +39,7 @@ align_rasters(mask_reprojfile, zones_raster_hr, mask_alignedfile, overwrite = TR
 # Compute zonal statistics on MODIS pixels using the mask as input and a user function to extract
 # values from the mask
 
-zonestats <- fastzonal(raster(mask_alignedfile), zone_object = zones_raster_hr, out_format = 'dframe')
+zonestats <- fastzonal(in_rts = raster(mask_alignedfile), zone_object = zones_raster_hr, out_format = 'dframe')
 
 outrast   <- raster(zones_raster)
 outrast[] <- as.numeric(zonestats[2:length(names(zonestats))])
@@ -52,9 +52,9 @@ rcl_mat <- list(
 outmask2 = rast_reclass(r, rcl_mat, out_rast = outmaskfile, r_out = TRUE, ovr = TRUE)
 
 
-mask_DS = raster("/home/lb/Temp/quality_phenorice/PHL/mask_quality_DS.tif")
-mask_WS = raster("/home/lb/Temp/quality_phenorice/PHL/mask_quality_WS.tif")
-
-mask_ws_ds = align_rasters("/home/lb/Temp/quality_phenorice/PHL/mask_quality_DS.tif", "/home/lb/Temp/quality_phenorice/PHL/mask_quality_WS.tif", "/home/lb/Temp/quality_phenorice/PHL/mask_quality_bis.tif", overwrite = TRUE)
-
-mask_ws_ds = raster("/home/lb/Temp/quality_phenorice/PHL/mask_quality_bis.tif")
+ mask_DS = raster("/home/lb/Temp/quality_phenorice/PHL/mask_quality_DS.tif")
+ mask_WS = raster("/home/lb/Temp/quality_phenorice/PHL/mask_quality_WS.tif")
+ 
+ mask_ws_ds = align_rasters("/home/lb/Temp/quality_phenorice/PHL/mask_quality_DS.tif", "/home/lb/Temp/quality_phenorice/PHL/mask_quality_WS.tif", "/home/lb/Temp/quality_phenorice/PHL/mask_quality_bis.tif", overwrite = TRUE)
+ 
+ mask_ws_ds = raster("/home/lb/Temp/quality_phenorice/PHL/mask_quality_bis.tif")

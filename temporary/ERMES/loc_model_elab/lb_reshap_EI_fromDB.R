@@ -62,7 +62,7 @@ for (cc in c('it','gr','es')) {
   # dir.create(dirname(out_shapename_dev), recursive = T)
 
   # in_shp_yield= lb_get_PGIS(in_yieldfile,table_yield, in_schema, con )
-  in_yield_data = lb_get_PGIS(in_schema ,table_yield, con, geom_field = "geom" )
+  in_yield_data  = lb_get_PGIS(in_schema ,table_yield, con, geom_field = "geom" )
   in_yield_manag = lb_get_PGIS(in_schema ,table_manag, con, geom_field = "geom" )
   out_yield_data = in_yield_data@data %>%
     mutate(agb = agb/1000, yield = yield/1000) %>%

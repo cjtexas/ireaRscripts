@@ -4,13 +4,13 @@
 \alias{fastzonal}
 \title{fastzonal}
 \usage{
-fastzonal(in_rts, sp_object, start_date = NULL, end_date = NULL,
+fastzonal(in_rts, zone_object, start_date = NULL, end_date = NULL,
   start_band = NULL, end_band = NULL, id_field = NULL, FUN = "mean",
   out_format = "xts", small = TRUE, small_method = "centroids",
-  na.rm = TRUE, verbose = FALSE)
+  na.rm = TRUE, verbose = FALSE, maxchunk = 3e+07)
 }
 \arguments{
-\item{end_band}{}
+\item{maxchunk}{}
 }
 \description{
 fastzonal

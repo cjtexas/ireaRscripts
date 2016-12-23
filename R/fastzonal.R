@@ -44,8 +44,8 @@ fastzonal = function(in_rts,
 {
   
   ras_type   <-  check_spatype(in_rts)
-  zone_type <-  check_spatype(zone_object)
-  if (ras_type %in% "rastobject") {
+  zone_type  <-  check_spatype(zone_object)
+  if (!ras_type %in% "rastobject") {
     stop("Input in_rts is not a RasterStack or RasterBrick object")
   }
   if (zone_type == "none") {
@@ -61,7 +61,7 @@ fastzonal = function(in_rts,
   }
   
   if (is.null(start_date) & is.null(start_band)) {
-    start_band <- 1
+    start_band <- as.integer(1)
     if (verbose) {message("Starting date/Starting band not provided - Using the first layer in the stack")}
   }
   
@@ -73,7 +73,7 @@ fastzonal = function(in_rts,
     start_date = try(as.Date(start_date), silent = TRUE)
     if (class(start_date) == "try-error") {
       warning("start_date is not a Date object or string cohercible to date - it will be ignored")
-      start_date <- 1
+      start_date <- as.integer(1)
     }
   }
   if (!class(end_date) %in% c("Date", "POSIXct", "POSIXlt")) {
@@ -84,9 +84,9 @@ fastzonal = function(in_rts,
     }
   }
   
-  if (!class(start_band) == "numeric") { stop("start_band is not numeric") }
+  if (!class(start_band) == "integer") { stop("start_band is not numeric") }
   
-  if (!class(end_band) == "numeric") { stop("end_band is not numeric")}
+  if (!class(end_band)   == "integer") { stop("end_band is not numeric")}
   
   
   # if (start_date > end_date) {
@@ -116,7 +116,11 @@ fastzonal = function(in_rts,
     dates <- seq(1, nlayers(in_rts), 1)
   }
   
-  sel_dates <- which(dates >= start_date & dates <= end_date)
+  if (class(start_date) == "integer" & class(end_date) == "integer") {
+    sel_dates <- seq(start_band, end_band, 1)
+  } else {
+    sel_dates <- which(dates >= start_date & dates <= end_date)
+  }
   
   if (length(sel_dates) > 0) {
     
@@ -198,9 +202,9 @@ fastzonal = function(in_rts,
       zone_object = crop(zone_object, extent(in_rts[[1]]))
       
     }
-    browser()
+    
     n_cells   <- nrow(zone_object) * ncol(zone_object)
-    ncols <- ncol(zone_object)
+    ncols     <- ncol(zone_object)
     n_chunks  <- floor(n_cells / maxchunk)
     full_data <-  list()
     
@@ -211,20 +215,21 @@ fastzonal = function(in_rts,
       }
       
       if (n_chunks > 1) {
-      for (chunk in 1:n_chunks) {
-        startrow <- (chunk - 1) *  ceiling(nrow(zone_object) / n_chunks) + 1
-        nrows <- ifelse(chunk != n_chunks, floor(nrow(zone_object) / n_chunks),
-                                           nrow(zone_object) - startrow)
-        message(chunk, " ", startrow, " ",  startrow + nrows)
-        full_data[[chunk]] <-
-          data.table(
-            value = getValues(in_rts[[sel_dates[f]]], startrow, nrows),
-            zones = getValues(zone_object, startrow, nrows)
-          )
-        #gc()
-      }
-      full_data <- rbindlist(full_data)
-      
+        for (chunk in seq_len(n_chunks)) {
+          startrow <- ifelse(chunk == 1, 1, (chunk - 1) * ceiling(nrow(zone_object) / n_chunks)) 
+          nrows    <- ifelse(chunk != n_chunks, ceiling(nrow(zone_object) / n_chunks),
+                             nrow(zone_object))
+          # endrow   <- 
+          message(chunk, " ", startrow, " ",  startrow + (nrows - 1))
+          full_data[[chunk]] <-
+            data.table(
+              value = getValues(in_rts[[sel_dates[f]]], startrow, ifelse(chunk == 1, nrows - 1, nrows)),
+              zones = getValues(zone_object, startrow, ifelse(chunk == 1, nrows - 1, nrows))
+            )
+          #gc()
+        }
+        full_data <- rbindlist(full_data)
+        
       } else {
         full_data <- data.table(
           value = getValues(in_rts[[sel_dates[f]]]),
