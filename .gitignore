@@ -36,3 +36,5 @@ vignettes/*.pdf
 # Directory for custom ignored files
 ignore/
 .Rproj.user
+
+*.pdf
