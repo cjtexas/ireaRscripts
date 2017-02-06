@@ -1,18 +1,49 @@
-function(in_rts,
-                         zone_object,
-                         mask_object = NULL,
-                         start_date  = NULL,
-                         end_date    = NULL,
-                         start_band  = NULL,
-                         end_band    = NULL,
-                         id_field    = NULL,
-                         FUN         = "mean",
-                         out_format  = "xts",
-                         small       = TRUE,
-                         small_method = "centroids",
-                         na.rm       = TRUE,
-                         verbose     = FALSE,
-                         maxchunk    = 50E6)
+#' fastzonal
+#'
+#' @description aaaa
+#'
+#' @param in_rts a
+#' @param zone_object f
+#' @param end_date g
+#' @param id_field g
+#' @param FUN h
+#' @param out_format g
+#' @param small h
+#' @param small_method h
+#' @param na.rm g
+#' @param verbose g
+#' @param start_band t
+#' @param end_band re
+#' @param maxchunk f
+#' @param mask_object g 
+#'
+#' @importFrom xts as.xts
+#' @importFrom rgdal writeOGR readOGR
+#' @importFrom sp proj4string spTransform CRS
+#' @importFrom tools file_path_sans_ext
+#' @importFrom raster getValues crop extent getZ extract rasterize res nlayers
+#' @importFrom tools file_path_sans_ext
+#' @importFrom gdalUtils gdal_rasterize
+#' @import lubridate
+#' @return Time series
+#' @export
+#'
+#' @examples
+fastzonal = function(in_rts,
+                     zone_object,
+                     mask_object = NULL,
+                     start_date  = NULL,
+                     end_date    = NULL,
+                     start_band  = NULL,
+                     end_band    = NULL,
+                     id_field    = NULL,
+                     FUN         = "mean",
+                     out_format  = "xts",
+                     small       = TRUE,
+                     small_method = "centroids",
+                     na.rm       = TRUE,
+                     verbose     = FALSE,
+                     maxchunk    = 50E6)
 {
   # Check input types and requesed dates/bands -----
   # Check input types and requesed dates/bands -----
@@ -39,7 +70,7 @@ function(in_rts,
   }
   
   if (is.null(end_date) & is.null(end_band)) {
-   if (ts_check) {end_band = ymd(dates[nlayers(in_rts)])} else {end_band = as.integer(nlayers(in_rts))}
+    if (ts_check) {end_band = ymd(dates[nlayers(in_rts)])} else {end_band = as.integer(nlayers(in_rts))}
     if (verbose) {message("Starting date/Starting band not provided - Using the last layer in the stack")}
   }
   if (!class(start_band) %in% c("Date", "POSIXct", "POSIXlt")) {
@@ -73,15 +104,8 @@ function(in_rts,
     out_format = "xts"
   }
   
-  if (length(id_field) != 0) {
-    if (!id_field %in% names(zone_object)) {
-      warning(
-        "Invalid 'id_field' value - names of output columns will be the record number of the shapefile feature"
-      )
-      id_field <- NULL
-    }
-  }
-  
+
+  # browser()
   if (!ts_check) {
     dates <- seq(1, nlayers(in_rts), 1)
   }
@@ -93,14 +117,22 @@ function(in_rts,
   } else {
     sel_dates <- which(dates >= start_band & dates <= end_band)
   }
- # Start cycling on dates/bands -----
+  # Start cycling on dates/bands -----
   if (length(sel_dates) > 0) {
     
     
-    if (check_spatype(zone_object) %in% c("spfile", "spobject")) {
+    if (check_spatype(zone_object) %in% c("vectfile", "spobject")) {
       
-      if (check_spatype(zone_object) == "spfile") {zone_object <- openshape(zone_object)}
+      if (check_spatype(zone_object) == "vectfile") {zone_object <- openshape(zone_object)}
       
+        if (length(id_field) != 0) {
+    if (!id_field %in% names(zone_object)) {
+      warning(
+        "Invalid 'id_field' value - names of output columns will be the record number of the shapefile feature"
+      )
+      id_field <- NULL
+    }
+  }
       if (proj4string(zone_object) != proj4string(in_rts)) {
         zone_object <- spTransform(zone_object, CRS(proj4string(in_rts[[1]])))
       }
@@ -118,8 +150,9 @@ will be retrieved\n using only the available pixels !"
           outside_feat = setdiff(zone_object$mdxtnq, zone_cropped$mdxtnq)
         }
       }
-      
+       browser()
       # Extraction on points  or lines -----
+      
       if (class(zone_cropped) %in% c("SpatialPointsDataFrame","SpatialPoints","SpatialLines", 
                                      "SpatialLinesDataFrame")) {
         if (verbose) { message("On point and lines shapefiles, the standard `extract` function is used. 
@@ -136,6 +169,7 @@ will be retrieved\n using only the available pixels !"
         }
         ts <- as.data.frame(ts)
         if (length(id_field) == 1) {
+          browser()
           all_feats <- as.character(zone_cropped@data[, eval(id_field)])
           names(ts) <- c(all_feats)
         }
@@ -146,9 +180,10 @@ will be retrieved\n using only the available pixels !"
         if (out_format == "dframe") {
           ts <- cbind(date = dates[sel_dates], ts)
         }
-      } else {   
+      } else {
+      
         # Extraction on polygons: raterize shape ----
-        
+        # browser()
         if (verbose) { message("Rasterizing shape")}
         if (verbose) { message("Writing temporary shapefile")}
         
@@ -173,7 +208,7 @@ will be retrieved\n using only the available pixels !"
       zone_object = crop(zone_object, extent(in_rts[[1]]))
       
     }
-    
+    browser()
     # Setup chunks ----
     n_cells   <- nrow(zone_object) * ncol(zone_object)
     ncols     <- ncol(zone_object)
@@ -200,27 +235,36 @@ will be retrieved\n using only the available pixels !"
             value = getValues(in_rts[[sel_dates[f]]], startrow, ifelse(chunk == 1, nrows - 1, nrows)),
             zones = getValues(zone_object, startrow, ifelse(chunk == 1, nrows - 1, nrows)), 
             key = 'zones') %>% 
-              subset( zones != 0) # remove data outside polygons (== zones = 0 ) 
+            subset( zones != 0) # remove data outside polygons (== zones = 0 ) 
           gc()
         }
         gc()
         # Add to the full data ----
-        browser()
+        # browser()
         full_data <- rbindlist(full_data)
         
       } else {
         full_data <- data.table(
           value = getValues(in_rts[[sel_dates[f]]]), zones = getValues(zone_object)) %>% 
-            subset( zones != 0) # remove data outside polygons (== zones = 0 ) 
+          subset( zones != 0) # remove data outside polygons (== zones = 0 ) 
       }
       
       setkey(full_data, "zones")
       
       if (f == 1) {
-        zones <- unique(full_data)$zones
+        zones <- unique(full_data$zones)
         ts <- matrix(nrow = length(sel_dates), ncol = length(zones))
+          if (length(id_field) == 1) {
+          browser()
+          all_feats <- as.character(zone_cropped@data[, eval(id_field)])
+          names(ts) <- c(all_feats)
+        }
+        else {
+          names(ts) <- 1:length(zone_cropped[, 1])
+          all_feats <- as.character(names(ts))
+        }
       }
-      
+      browser()
       # Apply the aggregation function if needed, otherwise just extract all pixrels
       if (FUN != 'null') {
         ts[f,] <- full_data[, lapply(.SD, match.fun(FUN),
@@ -253,7 +297,7 @@ will be retrieved\n using only the available pixels !"
     
     # On input shapefile: add "missing features"  using small poly extraction if requested ----
     
-    if (zone_type %in% c("spobject", "spfile")) {
+    if (zone_type %in% c("spobject", "vectfile")) {
       if (small & ncols != length(all_feats)) {
         if (length(id_field) == 1) {
           miss_feat   <- setdiff(as.character(zone_cropped@data[, "mdxtnq"]), names(ts))

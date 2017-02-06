@@ -4,18 +4,45 @@
 \alias{fastzonal}
 \title{fastzonal}
 \usage{
-fastzonal(in_rts, sp_object, start_date = NULL, end_date = NULL,
-  start_band = NULL, end_band = NULL, id_field = NULL, FUN = "mean",
-  out_format = "xts", small = TRUE, small_method = "centroids",
-  na.rm = TRUE, verbose = FALSE)
+fastzonal(in_rts, zone_object, mask_object = NULL, start_date = NULL,
+  end_date = NULL, start_band = NULL, end_band = NULL, id_field = NULL,
+  FUN = "mean", out_format = "xts", small = TRUE,
+  small_method = "centroids", na.rm = TRUE, verbose = FALSE,
+  maxchunk = 5e+07)
 }
 \arguments{
-\item{end_band}{}
+\item{in_rts}{a}
+
+\item{zone_object}{f}
+
+\item{mask_object}{g}
+
+\item{end_date}{g}
+
+\item{start_band}{t}
+
+\item{end_band}{re}
+
+\item{id_field}{g}
+
+\item{FUN}{h}
+
+\item{out_format}{g}
+
+\item{small}{h}
+
+\item{small_method}{h}
+
+\item{na.rm}{g}
+
+\item{verbose}{g}
+
+\item{maxchunk}{f}
+}
+\value{
+Time series
 }
 \description{
-fastzonal
-}
-\examples{
-
+aaaa
 }
 

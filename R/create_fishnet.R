@@ -39,7 +39,7 @@
 
 create_fishnet <- function(in_ext, cellsize, in_proj, out_raster = TRUE, out_shape = FALSE,
                            overw = FALSE, out_shapefile = NULL, crop_ext = NULL,
-                           out_rastfile = NULL) {
+                           out_rastfile = NULL, pypath = NULL) {
 
   # dir.create(dirname(out_rastfile), recursive = TRUE, showWarnings = FALSE)
   if (is.null(cellsize)){
@@ -101,7 +101,7 @@ create_fishnet <- function(in_ext, cellsize, in_proj, out_raster = TRUE, out_sha
     }
 
     # Use routine "gdal_polygonizeR" to write the fishnet as a shapefile
-    gdal_polygonizeR(sp_grd, readpoly = F, outshape = out_shapefile, overwrite = overw)
+    gdal_polygonizeR(sp_grd, readpoly = F, outshape = out_shapefile, overwrite = overw, pypath = pypath)
 
   }
 }
