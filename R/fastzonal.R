@@ -47,6 +47,7 @@ fastzonal = function(in_rts,
 {
   # Check input types and requesed dates/bands -----
   # Check input types and requesed dates/bands -----
+  
   ras_type   <-  check_spatype(in_rts)
   zone_type  <-  check_spatype(zone_object)
   if (!ras_type %in% "rastobject") {
@@ -64,20 +65,12 @@ fastzonal = function(in_rts,
     ts_check = TRUE
   }
   
-  if (is.null(start_date) & is.null(start_band)) {
-    if (ts_check) {start_band = ymd(dates[1])} else {start_band = as.integer(1)}
-    if (verbose) {message("Starting date/Starting band not provided - Using the first layer in the stack")}
-  }
-  
-  if (is.null(end_date) & is.null(end_band)) {
-    if (ts_check) {end_band = ymd(dates[nlayers(in_rts)])} else {end_band = as.integer(nlayers(in_rts))}
-    if (verbose) {message("Starting date/Starting band not provided - Using the last layer in the stack")}
-  }
   if (!class(start_band) %in% c("Date", "POSIXct", "POSIXlt")) {
     start_date = try(as.Date(start_date), silent = TRUE)
     if (class(start_date) == "try-error") {
       warning("start_date is not a Date object or string cohercible to date - it will be ignored")
       start_date <- as.integer(1)
+      start_band = 1
     }
   }
   if (!class(end_band) %in% c("Date", "POSIXct", "POSIXlt")) {
@@ -85,9 +78,22 @@ fastzonal = function(in_rts,
     if (class(end_date) == "try-error") {
       warning("end_date is not a Date object or string cohercible to date - it will be ignored")
       end_date <- nlayers(in_rts)
+      end_band <- nlayers(in_rts)
     }
   }
   
+  
+  if (is.null(start_date) & is.null(start_band)) {
+    start_band = 1
+    if (verbose) {message("Starting date/Starting band not provided - Using the first layer in the stack")}
+  }
+  
+  if (is.null(end_date) & is.null(end_band)) {
+    end_band = nlayers(in_rts)
+    # if (ts_check) {end_band = ymd(dates[nlayers(in_rts)])} else {end_band = as.integer(nlayers(in_rts))}
+    if (verbose) {message("Starting date/Starting band not provided - Using the last layer in the stack")}
+  }
+
   # if (!class(start_band) == "integer") { stop("start_band is not numeric") }
   # if (!class(end_band)   == "integer") { stop("end_band is not numeric")}
   
@@ -130,7 +136,10 @@ fastzonal = function(in_rts,
     
     if (check_spatype(zone_object) %in% c("vectfile", "spobject")) {
       
-      if (check_spatype(zone_object) == "vectfile") {zone_object <- openshape(zone_object)}
+      if (check_spatype(zone_object) == "vectfile") {
+        zone_object <- openshape(zone_object)
+        zone_type = "spobject"
+      }
       
         if (length(id_field) != 0) {
     if (!id_field %in% names(zone_object)) {
@@ -157,7 +166,7 @@ will be retrieved\n using only the available pixels !"
           outside_feat = setdiff(zone_object$mdxtnq, zone_cropped$mdxtnq)
         }
       }
-       browser()
+       # browser()
       # Extraction on points  or lines -----
       
       if (class(zone_cropped) %in% c("SpatialPointsDataFrame","SpatialPoints","SpatialLines", 
@@ -176,7 +185,7 @@ will be retrieved\n using only the available pixels !"
         }
         ts <- as.data.frame(ts)
         if (length(id_field) == 1) {
-          browser()
+          # browser()
           all_feats <- as.character(zone_cropped@data[, eval(id_field)])
           names(ts) <- c(all_feats)
         }
@@ -185,7 +194,7 @@ will be retrieved\n using only the available pixels !"
           all_feats <- as.character(names(ts))
         }
         if (out_format == "dframe") {
-          ts <- cbind(date = dates[sel_dates], ts)
+          ts <- cbind(band = dates[sel_dates], ts)
         }
       } else {
       
@@ -207,42 +216,42 @@ will be retrieved\n using only the available pixels !"
           ot <- ifelse(max(zone_cropped@data$mdxtnq) <= 65536, "Int16", "Int32")
         }
         gdal_rasterize(tempshape, tempraster, tr = raster::res(in_rts), te = extent(in_rts)[c(1, 3, 2, 4)], a = "mdxtnq", ot = ot)
-        zone_object <- raster(tempraster)
+        zone_raster <- raster(tempraster)
       }
     } else {
       # Extraction on raster: crop raster on shape ----
       if (check_spatype(zone_object) == "rastfile") { zone_object = raster(zone_object)}
-      zone_object = crop(zone_object, extent(in_rts[[1]]))
+      zone_raster = crop(zone_object, extent(in_rts[[1]]))
       
     }
-    browser()
+    # browser()
     # Setup chunks ----
-    n_cells   <- nrow(zone_object) * ncol(zone_object)
-    ncols     <- ncol(zone_object)
+    n_cells   <- nrow(zone_raster) * ncol(zone_raster)
+    ncols     <- ncol(zone_raster)
     n_chunks  <- floor(n_cells / maxchunk)
     full_data <- list()
     
     # Start data extraction ----
     for (f in 1:length(sel_dates)) {
       if (verbose == TRUE) {
-        message(paste0("Extracting data from date: ",
-                       dates[sel_dates[f]]))
+        message(paste0("Extracting data from date: ", dates[sel_dates[f]]))
       }
       
       if (n_chunks > 1) {
         for (chunk in seq_len(n_chunks)) {
           
           # Import data chunk ----
-          startrow <- ifelse(chunk == 1, 1, (chunk - 1) * ceiling(nrow(zone_object) / n_chunks)) 
-          nrows    <- ifelse(chunk != n_chunks, ceiling(nrow(zone_object) / n_chunks),
-                             nrow(zone_object))
+          startrow <- ifelse(chunk == 1, 1, (chunk - 1) * ceiling(nrow(zone_raster) / n_chunks)) 
+          nrows    <- ifelse(chunk != n_chunks, ceiling(nrow(zone_raster) / n_chunks),
+                             nrow(zone_raster))
           message(chunk, " ", startrow, " ",  startrow + (nrows - 1))
           # put current chunk in "full_data
+          
           full_data[[chunk]] <- data.table(
-            value = getValues(in_rts[[sel_dates[f]]], startrow, ifelse(chunk == 1, nrows - 1, nrows)),
-            zones = getValues(zone_object, startrow, ifelse(chunk == 1, nrows - 1, nrows)), 
+            value = raster::getValues(in_rts[[sel_dates[f]]], startrow, ifelse(chunk == 1, nrows - 1, nrows)),
+            zones = getValues(zone_raster, startrow, ifelse(chunk == 1, nrows - 1, nrows)), 
             key = 'zones') %>% 
-            subset( zones != 0) # remove data outside polygons (== zones = 0 ) 
+            subset(zones != 0) # remove data outside polygons (== zones = 0 ) 
           gc()
         }
         gc()
@@ -252,8 +261,8 @@ will be retrieved\n using only the available pixels !"
         
       } else {
         full_data <- data.table(
-          value = getValues(in_rts[[sel_dates[f]]]), zones = getValues(zone_object)) %>% 
-          subset( zones != 0) # remove data outside polygons (== zones = 0 ) 
+          value = getValues(in_rts[[sel_dates[f]]]), zones = getValues(zone_raster)) %>% 
+          subset(zones != 0) # remove data outside polygons (== zones = 0 ) 
       }
       
       setkey(full_data, "zones")
@@ -262,7 +271,7 @@ will be retrieved\n using only the available pixels !"
         zones <- unique(full_data$zones)
         ts <- matrix(nrow = length(sel_dates), ncol = length(zones))
           if (length(id_field) == 1) {
-          browser()
+          # browser()
           all_feats <- as.character(zone_cropped@data[, eval(id_field)])
           names(ts) <- c(all_feats)
         }
@@ -271,11 +280,11 @@ will be retrieved\n using only the available pixels !"
           all_feats <- as.character(names(ts))
         }
       }
-      browser()
+      # browser()
       # Apply the aggregation function if needed, otherwise just extract all pixrels
       if (FUN != 'null') {
-        ts[f,] <- full_data[, lapply(.SD, match.fun(FUN),
-                                     na.rm = na.rm), by = zones]$value
+        # ts[f,] <- full_data[, lapply(.SD, match.fun(FUN), na.rm = na.rm), by = zones]$value
+        ts[f,] <- summarize(group_by(full_data,zones), value = mean(value, na.rm = TRUE))$value
       } else {
         browser()
       }
@@ -299,13 +308,18 @@ will be retrieved\n using only the available pixels !"
     
     # prepare data.frame output if needed ----
     if (out_format == "dframe") {
-      ts <- cbind(date = dates[sel_dates], ts)
+      
+      oldnames = names(ts)
+      ts <- as.data.frame(cbind(band = dates[sel_dates], ts))
+      names(ts) = c("band", oldnames)
+      
     }
     
     # On input shapefile: add "missing features"  using small poly extraction if requested ----
     
     if (zone_type %in% c("spobject", "vectfile")) {
-      if (small & ncols != length(all_feats)) {
+      numcol = length(ts)-1
+      if (small & numcol != length(all_feats)) {
         if (length(id_field) == 1) {
           miss_feat   <- setdiff(as.character(zone_cropped@data[, "mdxtnq"]), names(ts))
           pos_missing <- which(as.character(zone_cropped@data[, "mdxtnq"]) %in% miss_feat)

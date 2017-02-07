@@ -17,7 +17,7 @@ openshape = function(shp_file){
 
   basename = basename(file_path_sans_ext(shp_file))
   dirname = dirname(shp_file)
-  shp = readOGR(dirname, basename)
+  shp = readOGR(dirname, basename, verbose = FALSE)
   return(shp)
 
 }

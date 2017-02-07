@@ -40,6 +40,8 @@ gdal_polygonizeR <- function(x, outshape=NULL, gdalformat = 'ESRI Shapefile',
         stop(sprintf('File already exists: %s',
                      toString(paste(outshape, c('shp', 'shx', 'dbf'),
                                     sep = '.')[f.exists])), call.=FALSE)
+      } else {
+        file.remove(list.files(dirname(outshape),pattern = glob2rx(paste0(basename(outshape),".*")), full.names = T))
       }
     }
     if (is(x, 'Raster')) {
@@ -52,7 +54,7 @@ gdal_polygonizeR <- function(x, outshape=NULL, gdalformat = 'ESRI Shapefile',
     } else stop('x must be a file path (character string), or a Raster object.')
 
     system2('python', args = (paste0(sprintf('"%1$s" "%2$s" -f "%3$s" "%4$s.shp"',
-                                      pypath, rastpath, gdalformat, outshape), " -fieldname id")))
+                                      pypath, rastpath, gdalformat, outshape), " -fieldname id -q")))
     if (isTRUE(readpoly)) {
       shp <- readOGR(dirname(outshape), layer = basename(outshape), verbose = !quiet)
       return(shp)
