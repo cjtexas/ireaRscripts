@@ -39,9 +39,9 @@
 
 create_fishnet <- function(in_ext, cellsize, in_proj, out_raster = TRUE, out_shape = FALSE,
                            overw = FALSE, out_shapefile = NULL, crop_ext = NULL,
-                           out_rastfile = NULL, pypath = NULL) {
+                         out_rastfile = NULL, pypath = NULL, res_factor = 1) {
 
-  # dir.create(dirname(out_rastfile), recursive = TRUE, showWarnings = FALSE)
+  # dir.create(dirname(out_rastfile), recursivle = TRUE, showWarnings = FALSE)
   if (is.null(cellsize)){
     stop("cellsize not specified !")
   }
@@ -58,11 +58,16 @@ create_fishnet <- function(in_ext, cellsize, in_proj, out_raster = TRUE, out_sha
     stop('error')
   }
 
-  cs <- c(cellsize,cellsize)  # cell size.
+  if (length(cellsize) == 1) {
+    cs <- c(cellsize,cellsize)*res_factor
+  } else {
+    cs <- cellsize*res_factor
+  }
+
   cc <- c(in_ext@xmin,in_ext@ymin) + (cs/2)   # corner of the grid. Since extent of a spatial object in R is defined
   # by centroids, we need to move by half pixel
   # compute number of cells per direction
-  cd     <- ceiling(c(((in_ext@xmax - in_ext@xmin)/cs[1]),((in_ext@ymax - in_ext@ymin)/cs[2]))) - 1
+  cd     <- ceiling(c(((in_ext@xmax - in_ext@xmin)/cs[1]),((in_ext@ymax - in_ext@ymin)/cs[2])))
   # construct grid topology
   grd    <- GridTopology(cellcentre.offset = cc, cellsize = cs, cells.dim = cd)   # Define grd characteristics
   #transform to spatial grid
