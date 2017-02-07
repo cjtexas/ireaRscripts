@@ -25,11 +25,11 @@ check_spatype <- function(object) {
     
     if (class(object) == "character") {
       
-      vecttry <- try(readOGR(dirname(object), basename(file_path_sans_ext(object))), silent = TRUE)
+      vecttry <- try(ogrInfo(dirname(object), basename(file_path_sans_ext(object))), silent = TRUE)
       
       if (class(vecttry) == "try-error") { 
         
-        rastry <- try(raster(object))
+        rastry <- try(gdalinfo(object, raw_output = FALSE, verbose = FALSE, debug = "OFF"), silent = TRUE)
         
         if (class(rastry) == "try-error") {
           
